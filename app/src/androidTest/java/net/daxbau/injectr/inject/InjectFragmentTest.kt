@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.verify
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setProgressTo
+import io.fotoapparat.result.PhotoResult
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
 import net.daxbau.injectr.shouldEq
@@ -62,6 +63,7 @@ class InjectFragmentTest : BaseFragmentTest() {
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {
         override var depth: Int = 0
         override var date: Date? = null
+        override var photo: PhotoResult? = null
 
         override fun save() { }
     }

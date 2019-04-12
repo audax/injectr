@@ -102,6 +102,8 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.0")
     implementation("com.airbnb.android:epoxy:3.4.0")
     kapt("com.airbnb.android:epoxy-processor:3.4.0")
+
+    implementation("io.fotoapparat:fotoapparat:2.7.0")
 }
 
 repositories {
