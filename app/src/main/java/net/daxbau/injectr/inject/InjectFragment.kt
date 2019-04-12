@@ -52,12 +52,14 @@ class InjectFragment : Fragment(), JustLog {
         )
         takePhotoButton.setOnClickListener {
             val pic = fotoapparat.takePicture()
+            vm.photo = pic
             pic.toBitmap()
                 .whenAvailable {
                     info("bitmap available")
                     it?.let { bitmapPhoto ->
                         info("setting image view")
                         injection_photo.setImageBitmap(bitmapPhoto.bitmap)
+                        injection_photo.rotation = -bitmapPhoto.rotationDegrees.toFloat()
                     }
                 }
         }

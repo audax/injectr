@@ -1,21 +1,30 @@
 package net.daxbau.injectr.inject
 
+import android.content.Context
 import androidx.navigation.NavController
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import io.fotoapparat.result.PhotoResult
 import kotlinx.coroutines.delay
 import net.daxbau.injectr.R
 import net.daxbau.injectr.data.InjectionInfo
 import net.daxbau.injectr.data.InjectionInfoDao
 import net.daxbau.injectr.runTest
 import org.junit.Test
+import java.io.File
 import java.util.*
 
 class InjectViewModelTest  {
 
     private val dao = mock<InjectionInfoDao>()
     private val nav = mock<NavController>()
-    private val vm = InjectViewModelImpl(dao).apply {
+    private val photo = mock<PhotoResult> {
+    }
+    private val context = mock<Context> {
+        on { filesDir } doReturn File("/tmp")
+    }
+    private val vm = InjectViewModelImpl(dao, context).apply {
         setNavController(nav)
     }
 
