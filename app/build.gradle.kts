@@ -1,4 +1,6 @@
+import org.jetbrains.kotlin.cli.jvm.main
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
+import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 plugins {
     id("com.android.application")
@@ -27,6 +29,8 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+    sourceSets["androidTest"].java.srcDir("src/sharedTest/java")
+    sourceSets["test"].java.srcDir("src/sharedTest/java")
 }
 
 dependencies {
@@ -49,6 +53,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-livedata:$lifecycleVersion")
     testImplementation("androidx.arch.core:core-testing:$lifecycleVersion")
+    androidTestImplementation("androidx.arch.core:core-testing:$lifecycleVersion")
     kapt("androidx.lifecycle:lifecycle-compiler:$lifecycleVersion")
 
     val roomVersion = "2.1.0-alpha06"
