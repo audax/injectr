@@ -1,6 +1,6 @@
 package net.daxbau.injectr.inject
 
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.nhaarman.mockitokotlin2.spy
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R

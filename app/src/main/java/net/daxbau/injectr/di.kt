@@ -7,6 +7,7 @@ import net.daxbau.injectr.inject.InjectViewModelImpl
 import net.daxbau.injectr.list.InjectionListViewModel
 import net.daxbau.injectr.list.InjectionListViewModelImpl
 import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val appModule = module {

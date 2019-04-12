@@ -3,7 +3,7 @@ package net.daxbau.injectr.data
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
-import androidx.test.runner.AndroidJUnit4
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import net.daxbau.injectr.block
 import net.daxbau.injectr.shouldEq
 import org.junit.Rule

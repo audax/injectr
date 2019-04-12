@@ -1,20 +1,30 @@
 package net.daxbau.injectr.list
 
-import net.daxbau.injectr.appModules
-import org.junit.After
-import org.junit.Before
+import androidx.navigation.NavController
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
+import net.daxbau.injectr.R
+import org.junit.Test
 
-import org.junit.Assert.*
-import org.koin.core.context.startKoin
-import org.koin.test.AutoCloseKoinTest
+class InjectionListViewModelTest {
 
-class InjectionListViewModelTest : AutoCloseKoinTest() {
+    private val mockNav = mock<NavController>()
+    private val vm = InjectionListViewModelImpl().apply {
+        setNavController(mockNav)
+    }
 
-    @Before
-    fun setUp() {
-        startKoin {
-            modules(appModules)
-        }
+    @Test
+    fun `does not navigate after destroy`() {
+        vm.onDestroy()
+        vm.addInjection()
+        verifyNoMoreInteractions(mockNav)
+    }
+
+    @Test
+    fun `navigates to inject view`() {
+        vm.addInjection()
+        verify(mockNav).navigate(R.id.inject)
     }
 
 }

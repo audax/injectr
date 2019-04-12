@@ -42,6 +42,9 @@ dependencies {
     implementation("com.google.android.material:material:1.1.0-alpha05")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
 
+    testImplementation("com.natpryce:hamkrest:1.7.0.0")
+    androidTestImplementation("com.natpryce:hamkrest:1.7.0.0")
+
 
     androidTestImplementation("androidx.test:rules:1.1.1")
 
@@ -89,6 +92,12 @@ dependencies {
     testImplementation("junit:junit:4.12")
     androidTestImplementation("androidx.test:runner:1.2.0-alpha03")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0-alpha03")
+    androidTestImplementation("com.schibsted.spain:barista:2.8.0") {
+        exclude("com.android.support")
+        exclude("org.jetbrains.kotlin")
+        exclude("androidx.test.espresso")
+    }
+    androidTestImplementation("androidx.test.ext:junit:1.1.0")
 }
 
 repositories {
