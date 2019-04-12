@@ -48,6 +48,7 @@ dependencies {
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
+    androidTestImplementation("org.mockito:mockito-android:2.23.4")
 
     val lifecycleVersion = "2.0.0"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
@@ -78,8 +79,12 @@ dependencies {
 
     implementation("org.koin:koin-android:2.0.0-rc-2")
     implementation("org.koin:koin-android-viewmodel:2.0.0-rc-2")
-    testImplementation("org.koin:koin-test:2.0.0-rc-2")
-    androidTestImplementation("org.koin:koin-test:2.0.0-rc-2")
+    testImplementation("org.koin:koin-test:2.0.0-rc-2") {
+        exclude("org.mockito")
+    }
+    androidTestImplementation("org.koin:koin-test:2.0.0-rc-2") {
+        exclude("org.mockito")
+    }
 
     testImplementation("junit:junit:4.12")
     androidTestImplementation("androidx.test:runner:1.2.0-alpha03")
