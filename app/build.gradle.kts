@@ -9,6 +9,10 @@ plugins {
 
 }
 
+kapt {
+    correctErrorTypes = true
+}
+
 android {
     compileSdkVersion(28)
     defaultConfig {
@@ -96,6 +100,8 @@ dependencies {
         exclude("androidx.test.espresso")
     }
     androidTestImplementation("androidx.test.ext:junit:1.1.0")
+    implementation("com.airbnb.android:epoxy:3.4.0")
+    kapt("com.airbnb.android:epoxy-processor:3.4.0")
 }
 
 repositories {

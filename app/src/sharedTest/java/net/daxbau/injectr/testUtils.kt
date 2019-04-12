@@ -2,6 +2,10 @@ package net.daxbau.injectr
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.newSingleThreadContext
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import java.util.concurrent.CountDownLatch
@@ -26,4 +30,13 @@ fun <T> LiveData<T>.block(): T? {
 
 infix fun <T> T.shouldEq(expected: T) {
     assertThat(this, equalTo(expected))
+}
+
+private val ctx = newSingleThreadContext("Test")
+fun <T> runTest(timeout: Long = 5, block: suspend CoroutineScope.() -> T) {
+    runBlocking(ctx) {
+        withTimeout(timeout * 1000) {
+            block()
+        }
+    }
 }

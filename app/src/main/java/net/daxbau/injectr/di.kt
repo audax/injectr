@@ -11,8 +11,8 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { get<AppDatabase>().injectionInfoDao() }
-    viewModel<InjectionListViewModel> { InjectionListViewModelImpl() }
-    viewModel<InjectViewModel> { InjectViewModelImpl() }
+    viewModel<InjectionListViewModel> { InjectionListViewModelImpl(get()) }
+    viewModel<InjectViewModel> { InjectViewModelImpl(get()) }
 }
 
 val productionModule = module {
