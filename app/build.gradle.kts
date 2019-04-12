@@ -1,6 +1,4 @@
-import org.jetbrains.kotlin.cli.jvm.main
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 plugins {
     id("com.android.application")

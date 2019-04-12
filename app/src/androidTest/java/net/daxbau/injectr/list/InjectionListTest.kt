@@ -2,17 +2,13 @@ package net.daxbau.injectr.list
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.natpryce.hamkrest.assertion.assertThat
-import com.natpryce.hamkrest.equalTo
 import com.natpryce.hamkrest.present
 import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.reset
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
-import org.junit.Before
-
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.mock.declare
