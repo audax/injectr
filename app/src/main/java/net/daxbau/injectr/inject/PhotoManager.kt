@@ -3,6 +3,7 @@ package net.daxbau.injectr.inject
 import android.content.Context
 import android.graphics.Bitmap
 import io.fotoapparat.Fotoapparat
+import io.fotoapparat.configuration.CameraConfiguration
 import io.fotoapparat.log.logcat
 import io.fotoapparat.log.loggers
 import io.fotoapparat.parameter.ScaleType
@@ -29,8 +30,12 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
         result = null
         fotoapparat = Fotoapparat(
             context = context,
-            view = view,                   // view which will draw the camera preview
+            view = view,
             scaleType = ScaleType.CenterInside,
+            cameraConfiguration = CameraConfiguration(
+                pictureResolution = { this.sortedBy { it.area }.find { it.width > 800 } },
+                previewResolution = { this.sortedBy { it.area }.find { it.width > 800 } }
+            ),
             logger = loggers(
                 logcat()
             )

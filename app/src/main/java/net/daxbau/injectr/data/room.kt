@@ -6,7 +6,7 @@ import java.util.*
 
 @Dao
 interface InjectionInfoDao {
-    @Query("SELECT * FROM injection_info")
+    @Query("SELECT * FROM injection_info ORDER BY date DESC")
     fun getAll(): LiveData<List<InjectionInfo>>
 
     @Insert
@@ -30,7 +30,7 @@ class Converters {
 
 
 @Database(
-    version = 3,
+    version = 4,
     entities = [InjectionInfo::class],
     exportSchema = false
 )
