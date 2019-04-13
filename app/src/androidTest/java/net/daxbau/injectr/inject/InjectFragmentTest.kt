@@ -7,7 +7,9 @@ import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertContains
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
 import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setProgressTo
 import io.fotoapparat.result.PhotoResult
 import net.daxbau.injectr.BaseFragmentTest
@@ -39,8 +41,6 @@ class InjectFragmentTest : BaseFragmentTest() {
         launch()
         assertThat(activityRule.activity.nav, present())
         verify(vm, atLeastOnce()).setNavController(activityRule.activity.nav)
-        activityRule.finishActivity()
-        verify(vm, atLeastOnce()).onDestroy()
     }
 
     @Test
@@ -48,6 +48,7 @@ class InjectFragmentTest : BaseFragmentTest() {
         launch()
         setProgressTo(R.id.depthSeekBar, 6)
         vm.depth shouldEq 6
+        assertContains(R.id.injection_slider_label, "6mm")
     }
 
     @Test
@@ -55,6 +56,7 @@ class InjectFragmentTest : BaseFragmentTest() {
         vm.depth = 8
         launch()
         assertProgress(R.id.depthSeekBar, 8)
+        assertContains(R.id.injection_slider_label, "8mm")
     }
 
     @Test
@@ -71,9 +73,26 @@ class InjectFragmentTest : BaseFragmentTest() {
         verify(photoManager).takePhoto()
     }
 
+    @Test
+    fun setsComment() {
+        launch()
+        writeTo(R.id.injection_comment, "comment")
+        vm.comment shouldEq "comment"
+    }
+
+    @Test
+    fun getsCommentFromVM() {
+        vm.comment = "comment"
+        launch()
+        assertContains(R.id.injection_comment, "comment")
+    }
+
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {
         override var depth: Int = 0
         override var date: Date? = null
+        override var limb: Int = 0
+        override var position: Int = 0
+        override var comment: String = ""
         override var photo: PhotoResult? = null
 
         override suspend fun save() { }

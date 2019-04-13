@@ -18,39 +18,42 @@ class InjectViewModelTest  {
     private val nav = mock<NavController>()
     private val mockBitmap = mock<Bitmap>()
     private val photoManager = StubPhotoManager()
+    private val date = Date()
+    private val sampleInjection = InjectionInfo(0, date, 4, 1, 1, "comment")
     private val vm = InjectViewModelImpl(dao, photoManager).apply {
         setNavController(nav)
     }
 
     @Test
     fun `saves the model with new date`() = runTest {
+        fillFields()
+        verify(dao).insertAll(sampleInjection.copy(date = vm.date!!))
+        verify(nav).navigate(R.id.injectionList)
+    }
+
+    private suspend fun fillFields() {
         vm.depth = 4
+        vm.limb = 1
+        vm.position = 1
+        vm.comment = "comment"
         vm.save()
         delay(50)
-        verify(dao).insertAll(InjectionInfo(0, vm.date!!, 4))
-        verify(nav).navigate(R.id.injectionList)
     }
 
     @Test
     fun `saves the model with supplied date`() = runTest {
-        vm.depth = 4
-        val date = Date()
         vm.date = date
-        vm.save()
-        delay(50)
-        verify(dao).insertAll(InjectionInfo(0, date, 4))
+        fillFields()
+        verify(dao).insertAll(sampleInjection)
         verify(nav).navigate(R.id.injectionList)
     }
 
     @Test
     fun `saves the photo`() = runTest {
-        vm.depth = 4
-        val date = Date()
-        vm.date = date
         photoManager.bitmap = mockBitmap
-        vm.save()
-        delay(50)
-        verify(dao).insertAll(InjectionInfo(0, date, 4, photoManager.fileName))
+        vm.date = date
+        fillFields()
+        verify(dao).insertAll(sampleInjection.copy(photoFileName = photoManager.fileName))
         verify(nav).navigate(R.id.injectionList)
     }
 }

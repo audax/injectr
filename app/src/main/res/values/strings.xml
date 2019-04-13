@@ -13,4 +13,7 @@
     <string name="inject_photo">Take photo</string>
     <string name="injection_photo_description">Injection Photograph</string>
     <string name="injection_photo_error">Could not take photo</string>
+    <string name="injection_position_hint">Position</string>
+    <string name="injection_depth_label">injection depth %dmm</string>
+    <string name="injection_comment_hint">Comment</string>
 </resources>

@@ -48,9 +48,9 @@ class InjectionListFragmentTest : BaseFragmentTest() {
     @Test
     fun showsData() {
         val list = listOf(
-            InjectionInfo(1, Date(), 6),
-            InjectionInfo(2, Date(), 8),
-            InjectionInfo(3, Date(), 2)
+            InjectionInfo(1, Date(), 6, 1, 2, "A"),
+            InjectionInfo(2, Date(), 8, 1, 1, "B"),
+            InjectionInfo(3, Date(), 2, 2, 4, "C")
         )
         vm.mutableInjectionInfo.postValue(list)
         launch()

@@ -30,7 +30,7 @@ class RoomTest : KoinTest {
 
     @Test
     fun injectionInfoBasicOperations() {
-        val injectionInfo = InjectionInfo(0, Date(), 1)
+        val injectionInfo = InjectionInfo(0, Date(), 1, 1, 1, "comment")
         injectionInfoDao.insertAll(injectionInfo)
         val data = injectionInfoDao.getAll().block()
         val element = injectionInfo.copy(id = 1)

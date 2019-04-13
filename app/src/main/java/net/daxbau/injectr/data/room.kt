@@ -30,7 +30,7 @@ class Converters {
 
 
 @Database(
-    version = 2,
+    version = 3,
     entities = [InjectionInfo::class],
     exportSchema = false
 )

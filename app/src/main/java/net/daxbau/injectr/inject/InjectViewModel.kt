@@ -9,7 +9,10 @@ import java.util.*
 
 abstract class InjectViewModel : NavigatingViewModel() {
     abstract var depth: Int
+    abstract var limb: Int
+    abstract var position: Int
     abstract var date: Date?
+    abstract var comment: String
     abstract var photo: PhotoResult?
     abstract suspend fun save()
 }
@@ -17,7 +20,10 @@ abstract class InjectViewModel : NavigatingViewModel() {
 class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, private val photoManager: PhotoManager)
     : InjectViewModel() {
     override var depth: Int = 0
+    override var limb: Int = 0
+    override var position: Int = 0
     override var date: Date? = null
+    override var comment: String = ""
     override var photo: PhotoResult? = null
 
 
@@ -32,7 +38,7 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
         } catch (e: NoPhotoAvailableError) {
             null
         }
-        injectionInfoDao.insertAll(InjectionInfo(0, injectionDate, depth, fileName))
+        injectionInfoDao.insertAll(InjectionInfo(0, injectionDate, depth, limb, position, comment, fileName))
         nav?.navigate(R.id.injectionList)
     }
 }
