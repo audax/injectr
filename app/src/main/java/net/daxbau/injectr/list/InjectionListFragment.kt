@@ -1,5 +1,6 @@
 package net.daxbau.injectr.list
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.TypedEpoxyController
 import kotlinx.android.synthetic.main.injection_list_fragment.*
 import net.daxbau.injectr.R
+import net.daxbau.injectr.common.JustLog
 import net.daxbau.injectr.common.observe
 import net.daxbau.injectr.data.InjectionInfo
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -30,7 +32,7 @@ class InjectionListFragment : Fragment() {
         injectFab.setOnClickListener {
             vm.addInjection()
         }
-        val injectionInfoListController = InjectionInfoListController()
+        val injectionInfoListController = InjectionInfoListController(requireContext().filesDir.absolutePath + '/')
         injectionListRecyclerView.setController(injectionInfoListController)
         observe(vm.injectionList) {
             injectionInfoListController.setData(it)
@@ -42,13 +44,24 @@ class InjectionListFragment : Fragment() {
         vm.onDestroy()
     }
 
-    class InjectionInfoListController : TypedEpoxyController<List<InjectionInfo>>() {
+    class InjectionInfoListController (private val imageDir: String): TypedEpoxyController<List<InjectionInfo>>(), JustLog {
         override fun buildModels(data: List<InjectionInfo>) {
             data.forEach {
+                val drawable = if (it.photoFileName != null) {
+                    val path = imageDir + it.photoFileName
+                    info("photo path $path")
+                    Drawable.createFromPath(path)
+                } else {
+                    info("no photo")
+                    null
+                }
                 injectionInfoItem {
                     id(it.id)
                     depth(it.depth)
                     date(it.date)
+                    position(it.position())
+                    comment(it.comment)
+                    photo(drawable)
                 }
             }
         }
