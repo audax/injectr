@@ -2,8 +2,10 @@ package net.daxbau.injectr
 
 import androidx.room.Room
 import net.daxbau.injectr.data.AppDatabase
+import net.daxbau.injectr.inject.FotoapparatPhotoManager
 import net.daxbau.injectr.inject.InjectViewModel
 import net.daxbau.injectr.inject.InjectViewModelImpl
+import net.daxbau.injectr.inject.PhotoManager
 import net.daxbau.injectr.list.InjectionListViewModel
 import net.daxbau.injectr.list.InjectionListViewModelImpl
 import org.koin.android.viewmodel.dsl.viewModel
@@ -13,6 +15,7 @@ val appModule = module {
     single { get<AppDatabase>().injectionInfoDao() }
     viewModel<InjectionListViewModel> { InjectionListViewModelImpl(get()) }
     viewModel<InjectViewModel> { InjectViewModelImpl(get(), get()) }
+    single<PhotoManager> { FotoapparatPhotoManager(get()) }
 }
 
 val productionModule = module {
@@ -21,7 +24,7 @@ val productionModule = module {
             get(),
             AppDatabase::class.java,
             "database"
-            ).build()
+            ).fallbackToDestructiveMigration().build()
     }
 }
 

@@ -12,6 +12,8 @@ import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setPro
 import io.fotoapparat.result.PhotoResult
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
+import net.daxbau.injectr.common.StubPhotoManager
+import net.daxbau.injectr.runTest
 import net.daxbau.injectr.shouldEq
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,10 +25,12 @@ class InjectFragmentTest : BaseFragmentTest() {
     override val fragmentId = R.id.inject
 
     private val vm = spy<StubInjectionListFragmentViewModel>()
+    private val photoManager = spy<StubPhotoManager>()
 
     override fun installMocks() {
         declare {
             single<InjectViewModel>(override = true) { vm }
+            single<PhotoManager>(override = true) { photoManager }
         }
     }
 
@@ -54,10 +58,17 @@ class InjectFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun saves() {
+    fun saves() = runTest {
         launch()
         clickOn(R.id.saveInjectionButton)
         verify(vm).save()
+    }
+
+    @Test
+    fun takesPhoto() {
+        launch()
+        clickOn(R.id.takePhotoButton)
+        verify(photoManager).takePhoto()
     }
 
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {
@@ -65,6 +76,6 @@ class InjectFragmentTest : BaseFragmentTest() {
         override var date: Date? = null
         override var photo: PhotoResult? = null
 
-        override fun save() { }
+        override suspend fun save() { }
     }
 }

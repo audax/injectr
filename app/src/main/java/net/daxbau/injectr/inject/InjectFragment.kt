@@ -7,19 +7,20 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import io.fotoapparat.Fotoapparat
-import io.fotoapparat.log.logcat
-import io.fotoapparat.log.loggers
-import io.fotoapparat.parameter.ScaleType
 import kotlinx.android.synthetic.main.fragment_inject.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
+import org.jetbrains.anko.support.v4.toast
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class InjectFragment : Fragment(), JustLog {
 
     private val vm: InjectViewModel by viewModel()
-    private lateinit var fotoapparat: Fotoapparat
+    private val photoManager: PhotoManager by inject()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,36 +33,31 @@ class InjectFragment : Fragment(), JustLog {
 
     override fun onStart() {
         super.onStart()
-        fotoapparat.start()
+        photoManager.start()
     }
 
     override fun onStop() {
         super.onStop()
-        fotoapparat.stop()
+        photoManager.stop()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        fotoapparat = Fotoapparat(
-            context = this.requireContext(),
-            view = camera_view,                   // view which will draw the camera preview
-            scaleType = ScaleType.CenterInside,    // (optional) we want the preview to fill the view
-            logger = loggers(                    // (optional) we want to log camera events in 2 places at once
-                logcat()                // ... in logcat
-            )
-        )
+        photoManager.bindView(camera_view)
         takePhotoButton.setOnClickListener {
-            val pic = fotoapparat.takePicture()
-            vm.photo = pic
-            pic.toBitmap()
-                .whenAvailable {
-                    info("bitmap available")
-                    it?.let { bitmapPhoto ->
-                        info("setting image view")
-                        injection_photo.setImageBitmap(bitmapPhoto.bitmap)
-                        injection_photo.rotation = -bitmapPhoto.rotationDegrees.toFloat()
+            photoManager.takePhoto()
+            GlobalScope.launch {
+                info("setting image view")
+                try {
+                    val (bitmap, rotation) = photoManager.toBitmap()
+                    launch(Dispatchers.Main) {
+                        injection_photo.setImageBitmap(bitmap)
+                        injection_photo.rotation = -rotation
                     }
+                } catch (e: NoPhotoAvailableError) {
+                    toast(R.string.injection_photo_error)
                 }
+            }
         }
         depthSeekBar.progress = vm.depth
         depthSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -73,7 +69,9 @@ class InjectFragment : Fragment(), JustLog {
         })
 
         saveInjectionButton.setOnClickListener {
-            vm.save()
+            GlobalScope.launch {
+                vm.save()
+            }
         }
     }
 

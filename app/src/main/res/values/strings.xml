@@ -12,4 +12,5 @@
     <string name="save_injection_button">Save</string>
     <string name="inject_photo">Take photo</string>
     <string name="injection_photo_description">Injection Photograph</string>
+    <string name="injection_photo_error">Could not take photo</string>
 </resources>
