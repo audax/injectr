@@ -31,6 +31,10 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+    packagingOptions {
+        // See https://github.com/Kotlin/kotlinx.coroutines/issues/1064
+        pickFirst("META-INF/atomicfu.kotlin_module")
+    }
     sourceSets["androidTest"].java.srcDir("src/sharedTest/java")
     sourceSets["test"].java.srcDir("src/sharedTest/java")
 }
@@ -43,6 +47,17 @@ dependencies {
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("com.google.android.material:material:1.1.0-alpha05")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
+
+    implementation("io.reactivex.rxjava2:rxkotlin:2.3.0")
+    implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.8")
+
+    implementation("org.jetbrains.anko:anko:0.10.8")
+
+    val coroutinesVersion = "1.2.0"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
 
     testImplementation("com.natpryce:hamkrest:1.7.0.0")
     androidTestImplementation("com.natpryce:hamkrest:1.7.0.0")
@@ -104,9 +119,11 @@ dependencies {
     kapt("com.airbnb.android:epoxy-processor:3.4.0")
 
     implementation("io.fotoapparat:fotoapparat:2.7.0")
+    implementation("io.fotoapparat.fotoapparat:adapter-rxjava2:2.7.0")
 }
 
 repositories {
     mavenCentral()
     maven("http://repository.jetbrains.com/all")
+    maven("https://jitpack.io")
 }

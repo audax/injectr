@@ -1,6 +1,7 @@
 package net.daxbau.injectr.data
 
-import androidx.room.*
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
 
@@ -8,6 +9,7 @@ import java.util.*
 data class InjectionInfo(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val date: Date,
-    val depth: Int
+    val depth: Int,
+    val photoFileName: String? = null
 )
 
