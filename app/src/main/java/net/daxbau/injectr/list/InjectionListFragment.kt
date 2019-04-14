@@ -41,7 +41,7 @@ class InjectionListFragment : Fragment() {
         val handler = Handler(handlerThread.looper)
         this.handler = handler
         val injectionInfoListController = InjectionInfoListController(
-            requireContext().filesDir.absolutePath + '/', handler)
+            requireContext().filesDir.absolutePath + '/', handler, vm)
         injectionListRecyclerView.setController(injectionInfoListController)
         observe(vm.injectionList) {
             injectionInfoListController.setData(it)
@@ -55,7 +55,7 @@ class InjectionListFragment : Fragment() {
         handler?.looper?.quit()
     }
 
-    class InjectionInfoListController (private val imageDir: String, handler: Handler)
+    class InjectionInfoListController (private val imageDir: String, handler: Handler, vm: InjectionListViewModel)
         : TypedEpoxyController<List<InjectionInfo>>(handler, handler), JustLog {
         override fun buildModels(data: List<InjectionInfo>) {
             data.forEach {
@@ -74,6 +74,9 @@ class InjectionListFragment : Fragment() {
                     position(it.position())
                     comment(it.comment)
                     photo(drawable)
+                    onClick { _: View ->
+                        info("Click on ${it.id}")
+                    }
                 }
             }
         }

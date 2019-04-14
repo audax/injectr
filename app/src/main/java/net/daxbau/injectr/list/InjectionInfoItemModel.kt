@@ -1,8 +1,10 @@
 package net.daxbau.injectr.list
 
 import android.graphics.drawable.Drawable
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
@@ -19,6 +21,7 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
     @EpoxyAttribute var photo: Drawable? = null
     @EpoxyAttribute var position: String = ""
     @EpoxyAttribute lateinit var date: Date
+    @EpoxyAttribute lateinit var onClick: View.OnClickListener
 
     override fun bind(holder: Holder) {
         super.bind(holder)
@@ -27,6 +30,7 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
         holder.commentView.text = comment
         holder.positionView.text = position
         holder.imageView.setImageDrawable(photo)
+        holder.cardView.setOnClickListener(onClick)
     }
 
     class Holder : KotlinEpoxyHolder() {
@@ -35,5 +39,6 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
         val positionView by bind<TextView>(R.id.position_item)
         val commentView by bind<TextView>(R.id.comment_item)
         val imageView by bind<ImageView>(R.id.photo_item)
+        val cardView by bind<CardView>(R.id.injection_card_item)
     }
 }
