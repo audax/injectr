@@ -1,6 +1,6 @@
 package net.daxbau.injectr.inject
 
-import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -114,11 +114,11 @@ class InjectFragment : Fragment(), JustLog {
             }
         })
 
-        var alertDialog: AlertDialog? = null
+        var alertDialog: DialogInterface? = null
         observe(vm.confirmationRequired) {
             if (it == true) {
                 // dialog
-                alertDialog = alert("Save without photo?") {
+                alertDialog = alert(R.string.injection_confirm) {
                     yesButton {
                         GlobalScope.launch {
                             vm.confirmSave()

@@ -16,4 +16,5 @@
     <string name="injection_position_hint">Position</string>
     <string name="injection_depth_label">injection depth %dmm</string>
     <string name="injection_comment_hint">Comment</string>
+    <string name="injection_confirm">Save without photo?</string>
 </resources>
