@@ -117,7 +117,6 @@ class InjectFragment : Fragment(), JustLog {
         var alertDialog: DialogInterface? = null
         observe(vm.confirmationRequired) {
             if (it == true) {
-                // dialog
                 alertDialog = alert(R.string.injection_confirm) {
                     yesButton {
                         GlobalScope.launch {

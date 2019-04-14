@@ -2,6 +2,8 @@ package net.daxbau.injectr.list
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +17,11 @@ import net.daxbau.injectr.common.observe
 import net.daxbau.injectr.data.InjectionInfo
 import org.koin.android.viewmodel.ext.android.viewModel
 
+
 class InjectionListFragment : Fragment() {
 
     private val vm: InjectionListViewModel by viewModel()
+    private var handler: Handler? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,7 +36,12 @@ class InjectionListFragment : Fragment() {
         injectFab.setOnClickListener {
             vm.addInjection()
         }
-        val injectionInfoListController = InjectionInfoListController(requireContext().filesDir.absolutePath + '/')
+        val handlerThread= HandlerThread("epoxy")
+        handlerThread.start()
+        val handler = Handler(handlerThread.looper)
+        this.handler = handler
+        val injectionInfoListController = InjectionInfoListController(
+            requireContext().filesDir.absolutePath + '/', handler)
         injectionListRecyclerView.setController(injectionInfoListController)
         observe(vm.injectionList) {
             injectionInfoListController.setData(it)
@@ -42,9 +51,12 @@ class InjectionListFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         vm.onDestroy()
+        handler?.removeCallbacksAndMessages(null)
+        handler?.looper?.quit()
     }
 
-    class InjectionInfoListController (private val imageDir: String): TypedEpoxyController<List<InjectionInfo>>(), JustLog {
+    class InjectionInfoListController (private val imageDir: String, handler: Handler)
+        : TypedEpoxyController<List<InjectionInfo>>(handler, handler), JustLog {
         override fun buildModels(data: List<InjectionInfo>) {
             data.forEach {
                 val drawable = if (it.photoFileName != null) {
