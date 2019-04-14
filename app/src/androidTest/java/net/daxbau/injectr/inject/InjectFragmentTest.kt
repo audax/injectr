@@ -1,14 +1,17 @@
 package net.daxbau.injectr.inject
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.present
-import com.nhaarman.mockitokotlin2.atLeastOnce
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.*
 import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertContains
+import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotContains
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDialogNegativeButton
+import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDialogPositiveButton
 import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
 import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setProgressTo
 import io.fotoapparat.result.PhotoResult
@@ -26,7 +29,7 @@ import java.util.*
 class InjectFragmentTest : BaseFragmentTest() {
     override val fragmentId = R.id.inject
 
-    private val vm = spy<StubInjectionListFragmentViewModel>()
+    private val vm = spy(StubInjectionListFragmentViewModel())
     private val photoManager = spy<StubPhotoManager>()
 
     override fun installMocks() {
@@ -87,6 +90,34 @@ class InjectFragmentTest : BaseFragmentTest() {
         assertContains(R.id.injection_comment, "comment")
     }
 
+    @Test
+    fun asksForConfirmation() {
+        launch()
+        vm.confirmationRequiredProxy.postValue(true)
+        assertContains("Save without photo?")
+        vm.confirmationRequiredProxy.postValue(false)
+        assertNotContains("Save without photo?")
+    }
+
+    @Test
+    fun canConfirm() = runTest {
+        launch()
+        vm.confirmationRequiredProxy.postValue(true)
+        assertContains("Save without photo?")
+        clickDialogPositiveButton()
+        verify(vm).confirmSave()
+    }
+
+    @Test
+    fun canCancel() {
+        launch()
+        vm.confirmationRequiredProxy.postValue(true)
+        assertContains("Save without photo?")
+        reset(vm)
+        clickDialogNegativeButton()
+        verifyNoMoreInteractions(vm)
+    }
+
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {
         override var depth: Int = 0
         override var date: Date? = null
@@ -94,7 +125,10 @@ class InjectFragmentTest : BaseFragmentTest() {
         override var position: Int = 0
         override var comment: String = ""
         override var photo: PhotoResult? = null
+        val confirmationRequiredProxy = MutableLiveData<Boolean>()
+        override val confirmationRequired: LiveData<Boolean> = confirmationRequiredProxy
 
         override suspend fun save() { }
+        override suspend fun confirmSave() { }
     }
 }

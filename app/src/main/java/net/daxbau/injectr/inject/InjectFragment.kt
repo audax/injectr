@@ -1,5 +1,6 @@
 package net.daxbau.injectr.inject
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -18,8 +19,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
+import net.daxbau.injectr.common.observe
+import org.jetbrains.anko.noButton
+import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.yesButton
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
@@ -108,6 +113,23 @@ class InjectFragment : Fragment(), JustLog {
                 vm.comment = s.toString()
             }
         })
+
+        var alertDialog: AlertDialog? = null
+        observe(vm.confirmationRequired) {
+            if (it == true) {
+                // dialog
+                alertDialog = alert("Save without photo?") {
+                    yesButton {
+                        GlobalScope.launch {
+                            vm.confirmSave()
+                        }
+                    }
+                    noButton {  }
+                }.show()
+            } else {
+                alertDialog?.cancel()
+            }
+        }
     }
 
     private fun numberPickerFormatWorkaround() {

@@ -1,5 +1,7 @@
 package net.daxbau.injectr.inject
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import io.fotoapparat.result.PhotoResult
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.NavigatingViewModel
@@ -14,7 +16,9 @@ abstract class InjectViewModel : NavigatingViewModel() {
     abstract var date: Date?
     abstract var comment: String
     abstract var photo: PhotoResult?
+    abstract val confirmationRequired: LiveData<Boolean>
     abstract suspend fun save()
+    abstract suspend fun confirmSave()
 }
 
 class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, private val photoManager: PhotoManager)
@@ -26,19 +30,36 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
     override var comment: String = ""
     override var photo: PhotoResult? = null
 
+    private val _confirmationRequired = MutableLiveData<Boolean>().apply { value = false }
+    override val confirmationRequired: LiveData<Boolean> = _confirmationRequired
+
 
     override suspend fun save() {
+        internalSave()
+    }
+
+    private suspend fun internalSave(force: Boolean = false) {
+        val fileName = try {
+            photoManager.save()
+        } catch (e: NoPhotoAvailableError) {
+            if (!force) {
+                _confirmationRequired.postValue(true)
+                return
+            } else {
+                null
+            }
+        }
         val injectionDate = date ?: run {
             val now = Date()
             date = now
             now
         }
-        val fileName = try {
-            photoManager.save()
-        } catch (e: NoPhotoAvailableError) {
-            null
-        }
         injectionInfoDao.insertAll(InjectionInfo(0, injectionDate, depth, limb, position, comment, fileName))
         nav?.navigate(R.id.injectionList)
+    }
+
+    override suspend fun confirmSave() {
+        _confirmationRequired.postValue(false)
+        internalSave(true)
     }
 }
