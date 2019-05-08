@@ -118,6 +118,20 @@ class InjectFragmentTest : BaseFragmentTest() {
         verifyNoMoreInteractions(vm)
     }
 
+    @Test
+    fun switchesCamera() {
+        launch()
+        clickOn(R.id.switchCameraButton)
+        verify(vm).switchCamera()
+    }
+
+    @Test
+    fun togglesTorch() {
+        launch()
+        clickOn(R.id.toggleFlashButton)
+        verify(vm).toggleTorch()
+    }
+
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {
         override var depth: Int = 0
         override var date: Date? = null
@@ -130,5 +144,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
         override suspend fun save() { }
         override suspend fun confirmSave() { }
+        override fun switchCamera() {}
+        override fun toggleTorch() {}
     }
 }

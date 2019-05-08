@@ -6,9 +6,12 @@ import net.daxbau.injectr.inject.NoPhotoAvailableError
 import net.daxbau.injectr.inject.PhotoManager
 
 open class StubPhotoManager : PhotoManager {
+
     var fileName = "stub_file"
     var rotation = 1f
     var bitmap: Bitmap? = null
+    var frontCameraSelected = true
+    var torchEnabled = false
 
     override fun bindView(view: CameraView) { }
 
@@ -29,5 +32,13 @@ open class StubPhotoManager : PhotoManager {
             throw NoPhotoAvailableError()
         }
         return fileName
+    }
+
+    override fun switchCamera() {
+        frontCameraSelected = !frontCameraSelected
+    }
+
+    override fun toggleTorch() {
+        torchEnabled = !torchEnabled
     }
 }

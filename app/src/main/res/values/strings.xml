@@ -18,4 +18,6 @@
     <string name="injection_comment_hint">Comment</string>
     <string name="injection_confirm">Save without photo?</string>
     <string name="injection_depth_value">%1$dmm</string>
+    <string name="inject_switch_camera">Switch camera</string>
+    <string name="inject_toggle_flash">Toggle flash</string>
 </resources>

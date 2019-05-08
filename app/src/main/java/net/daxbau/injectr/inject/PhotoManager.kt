@@ -4,11 +4,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import io.fotoapparat.Fotoapparat
 import io.fotoapparat.configuration.CameraConfiguration
+import io.fotoapparat.configuration.UpdateConfiguration
 import io.fotoapparat.log.logcat
 import io.fotoapparat.log.loggers
 import io.fotoapparat.parameter.ScaleType
 import io.fotoapparat.result.PhotoResult
 import io.fotoapparat.result.adapter.rxjava2.toSingle
+import io.fotoapparat.selector.back
+import io.fotoapparat.selector.front
+import io.fotoapparat.selector.off
+import io.fotoapparat.selector.torch
 import io.fotoapparat.view.CameraView
 import kotlinx.coroutines.rx2.await
 import java.io.File
@@ -19,6 +24,8 @@ interface PhotoManager {
     fun start()
     fun stop()
     fun takePhoto()
+    fun switchCamera()
+    fun toggleTorch()
     suspend fun toBitmap(): Pair<Bitmap, Float>
     suspend fun save(): String
 }
@@ -26,16 +33,22 @@ interface PhotoManager {
 class FotoapparatPhotoManager (private val context: Context): PhotoManager {
     private var fotoapparat: Fotoapparat? = null
     private var result: PhotoResult? = null
+    private var frontLensSelected = false
+    private var torchEnabled = false
+
+    private var cameraConfiguration = CameraConfiguration(
+        pictureResolution = { this.sortedBy { it.area }.find { it.width > 800 } },
+        previewResolution = { this.sortedBy { it.area }.find { it.width > 800 } }
+    )
+
     override fun bindView(view: CameraView) {
         result = null
         fotoapparat = Fotoapparat(
             context = context,
             view = view,
             scaleType = ScaleType.CenterInside,
-            cameraConfiguration = CameraConfiguration(
-                pictureResolution = { this.sortedBy { it.area }.find { it.width > 800 } },
-                previewResolution = { this.sortedBy { it.area }.find { it.width > 800 } }
-            ),
+            lensPosition = back(),
+            cameraConfiguration = cameraConfiguration,
             logger = loggers(
                 logcat()
             )
@@ -49,6 +62,28 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
     override fun stop() {
         fotoapparat?.stop()
     }
+
+    override fun switchCamera() {
+        fotoapparat?.switchTo(
+            lensPosition = if (frontLensSelected) back() else front(),
+            cameraConfiguration = cameraConfiguration
+        )
+        frontLensSelected = !frontLensSelected
+    }
+
+    override fun toggleTorch() {
+        val flashMode = if (torchEnabled) off() else torch()
+        fotoapparat?.updateConfiguration(
+            UpdateConfiguration(
+                flashMode = flashMode
+            )
+        )
+        torchEnabled = !torchEnabled
+        cameraConfiguration = cameraConfiguration.copy(
+            flashMode = flashMode
+        )
+    }
+
 
     override fun takePhoto() {
         result = fotoapparat?.takePicture()

@@ -83,4 +83,18 @@ class InjectViewModelTest  {
         confirmation shouldEq true
         vm.confirmSave()
     }
+
+    @Test
+    fun `switches camera`() {
+        photoManager.frontCameraSelected shouldEq true
+        vm.switchCamera()
+        photoManager.frontCameraSelected shouldEq false
+    }
+
+    @Test
+    fun `toggles torch`() {
+        photoManager.torchEnabled shouldEq false
+        vm.toggleTorch()
+        photoManager.torchEnabled shouldEq true
+    }
 }

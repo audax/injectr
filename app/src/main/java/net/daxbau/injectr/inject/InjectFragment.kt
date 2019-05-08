@@ -21,6 +21,7 @@ import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
 import net.daxbau.injectr.common.observe
 import org.jetbrains.anko.noButton
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4.alert
 import org.jetbrains.anko.support.v4.runOnUiThread
 import org.jetbrains.anko.support.v4.toast
@@ -78,7 +79,7 @@ class InjectFragment : Fragment(), JustLog {
         depthSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 vm.depth = progress
-                injection_slider_label.text = getString(net.daxbau.injectr.R.string.injection_depth_label, progress)
+                injection_slider_label.text = getString(R.string.injection_depth_label, progress)
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) { }
             override fun onStopTrackingTouch(seekBar: SeekBar) { }
@@ -113,6 +114,14 @@ class InjectFragment : Fragment(), JustLog {
                 vm.comment = s.toString()
             }
         })
+
+        switchCameraButton.onClick {
+            vm.switchCamera()
+        }
+
+        toggleFlashButton.onClick {
+            vm.toggleTorch()
+        }
 
         var alertDialog: DialogInterface? = null
         observe(vm.confirmationRequired) {
