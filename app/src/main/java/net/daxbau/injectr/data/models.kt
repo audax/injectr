@@ -16,6 +16,6 @@ data class InjectionInfo(
     val comment: String,
     val photoFileName: String? = null
 ) {
-    fun position() = ('A' + limb).toString() + position.toString()
+    fun position() =  limb.toString() + ('A' + position).toString()
 }
 

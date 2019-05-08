@@ -8,6 +8,7 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.KotlinEpoxyHolder
+import java.text.DateFormat
 import java.util.*
 
 @EpoxyModelClass(layout = R.layout.injection_info_item)
@@ -21,11 +22,11 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
 
     override fun bind(holder: Holder) {
         super.bind(holder)
-        holder.dateView.text = date.toLocaleString()
-        holder.depthView.text = depth.toString()
+        holder.dateView.text = DateFormat.getInstance().format(date)
+        holder.depthView.text = holder.depthView.context.getString(R.string.injection_depth_value, depth)
         holder.commentView.text = comment
         holder.positionView.text = position
-        holder.immageView.setImageDrawable(photo)
+        holder.imageView.setImageDrawable(photo)
     }
 
     class Holder : KotlinEpoxyHolder() {
@@ -33,6 +34,6 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
         val dateView by bind<TextView>(R.id.date_item)
         val positionView by bind<TextView>(R.id.position_item)
         val commentView by bind<TextView>(R.id.comment_item)
-        val immageView by bind<ImageView>(R.id.photo_item)
+        val imageView by bind<ImageView>(R.id.photo_item)
     }
 }

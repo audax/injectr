@@ -17,4 +17,5 @@
     <string name="injection_depth_label">injection depth %dmm</string>
     <string name="injection_comment_hint">Comment</string>
     <string name="injection_confirm">Save without photo?</string>
+    <string name="injection_depth_value">%1$dmm</string>
 </resources>
