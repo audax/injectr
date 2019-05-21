@@ -11,5 +11,7 @@
     <fragment android:id="@+id/inject" android:name="net.daxbau.injectr.inject.InjectFragment" android:label="fragment_inject"
               tools:layout="@layout/fragment_inject">
         <action android:id="@+id/action_inject_to_injectionList" app:destination="@id/injectionList"/>
+        <argument android:name="injection_info" app:argType="net.daxbau.injectr.data.InjectionInfo" app:nullable="true"
+                  android:defaultValue="@null"/>
     </fragment>
 </navigation>

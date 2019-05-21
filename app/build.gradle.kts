@@ -42,6 +42,10 @@ android {
     sourceSets["test"].java.srcDir("src/sharedTest/java")
 }
 
+androidExtensions {
+    isExperimental = true
+}
+
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
@@ -69,6 +73,11 @@ dependencies {
     androidTestImplementation("androidx.test:rules:1.1.1")
 
 
+    testImplementation("org.mockito:mockito-core:2.27.0")
+    androidTestImplementation("org.mockito:mockito-core:2.27.0")
+
+    testImplementation("org.opentest4j:opentest4j:1.1.1")
+    androidTestImplementation("org.opentest4j:opentest4j:1.1.1")
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     androidTestImplementation("org.mockito:mockito-android:2.27.0")
@@ -111,7 +120,9 @@ dependencies {
 
     testImplementation("junit:junit:4.12")
     androidTestImplementation("androidx.test:runner:1.2.0-beta01")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.2.0-beta01")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.1.1")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.1.1")
+
     androidTestImplementation("com.schibsted.spain:barista:2.8.0") {
         exclude("com.android.support")
         exclude("org.jetbrains.kotlin")

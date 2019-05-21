@@ -55,7 +55,11 @@ class InjectionListFragment : Fragment() {
         handler?.looper?.quit()
     }
 
-    class InjectionInfoListController (private val imageDir: String, handler: Handler, vm: InjectionListViewModel)
+    class InjectionInfoListController(
+        private val imageDir: String,
+        handler: Handler,
+        private val vm: InjectionListViewModel
+    )
         : TypedEpoxyController<List<InjectionInfo>>(handler, handler), JustLog {
         override fun buildModels(data: List<InjectionInfo>) {
             data.forEach {
@@ -76,6 +80,7 @@ class InjectionListFragment : Fragment() {
                     photo(drawable)
                     onClick { _: View ->
                         info("Click on ${it.id}")
+                        vm.editInjection(it)
                     }
                 }
             }

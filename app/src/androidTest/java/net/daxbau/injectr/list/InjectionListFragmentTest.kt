@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
+import com.schibsted.spain.barista.interaction.BaristaListInteractions.clickListItem
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
 import net.daxbau.injectr.data.InjectionInfo
@@ -22,6 +23,12 @@ class InjectionListFragmentTest : BaseFragmentTest() {
     override val fragmentId = R.id.injectionList
 
     private val vm = spy<StubInjectionListFragmentViewModel>()
+
+    private val list = listOf(
+        InjectionInfo(1, Date(), 6, 1, 2, "A"),
+        InjectionInfo(2, Date(), 8, 1, 1, "B"),
+        InjectionInfo(3, Date(), 2, 2, 4, "C")
+    )
 
     override fun installMocks() {
         declare {
@@ -47,19 +54,23 @@ class InjectionListFragmentTest : BaseFragmentTest() {
 
     @Test
     fun showsData() {
-        val list = listOf(
-            InjectionInfo(1, Date(), 6, 1, 2, "A"),
-            InjectionInfo(2, Date(), 8, 1, 1, "B"),
-            InjectionInfo(3, Date(), 2, 2, 4, "C")
-        )
         vm.mutableInjectionInfo.postValue(list)
         launch()
         assertRecyclerViewItemCount(R.id.injectionListRecyclerView, 3)
+    }
+
+    @Test
+    fun navigatesToEditView() {
+        vm.mutableInjectionInfo.postValue(list)
+        launch()
+        clickListItem(R.id.injectionListRecyclerView, 0)
+        verify(vm).editInjection(list[0])
     }
 
     private open class StubInjectionListFragmentViewModel : InjectionListViewModel() {
         val mutableInjectionInfo = MutableLiveData<List<InjectionInfo>>()
         override val injectionList = mutableInjectionInfo
         override fun addInjection() { }
+        override fun editInjection(injectionInfo: InjectionInfo) {}
     }
 }
