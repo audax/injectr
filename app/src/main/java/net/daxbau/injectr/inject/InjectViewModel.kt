@@ -21,6 +21,7 @@ abstract class InjectViewModel : NavigatingViewModel() {
     abstract suspend fun confirmSave()
     abstract fun switchCamera()
     abstract fun toggleTorch()
+    abstract fun loadInjectionInfo(injectionInfo: InjectionInfo)
 }
 
 class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, private val photoManager: PhotoManager)
@@ -36,9 +37,19 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
     private val _confirmationRequired = MutableLiveData<Boolean>().apply { value = false }
     override val confirmationRequired: LiveData<Boolean> = _confirmationRequired
 
+    private var injectionInfo: InjectionInfo? = null
 
     override suspend fun save() {
         internalSave()
+    }
+
+    override fun loadInjectionInfo(injectionInfo: InjectionInfo) {
+        this.injectionInfo = injectionInfo
+        depth = injectionInfo.depth
+        limb = injectionInfo.limb
+        position = injectionInfo.position
+        date = injectionInfo.date
+        comment = injectionInfo.comment
     }
 
     private suspend fun internalSave(force: Boolean = false) {

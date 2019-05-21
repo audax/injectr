@@ -13,6 +13,7 @@ import android.widget.NumberPicker
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.android.synthetic.main.bottom_sheet_inject.*
 import kotlinx.android.synthetic.main.fragment_inject.*
@@ -36,6 +37,7 @@ class InjectFragment : Fragment(), JustLog {
 
     private val vm: InjectViewModel by viewModel()
     private val photoManager: PhotoManager by inject()
+    private val args: InjectFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,6 +60,9 @@ class InjectFragment : Fragment(), JustLog {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        args.injectionInfo?.let {
+            vm.loadInjectionInfo(it)
+        }
         val bottomSheet = BottomSheetBehavior.from(bottom_sheet_inject)
         bottom_sheet_inject.onClick {
             bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
