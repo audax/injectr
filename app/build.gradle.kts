@@ -35,6 +35,9 @@ android {
         // See https://github.com/Kotlin/kotlinx.coroutines/issues/1064
         pickFirst("META-INF/atomicfu.kotlin_module")
     }
+    testOptions {
+        animationsDisabled = true
+    }
     sourceSets["androidTest"].java.srcDir("src/sharedTest/java")
     sourceSets["test"].java.srcDir("src/sharedTest/java")
 }

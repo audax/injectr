@@ -1,7 +1,13 @@
 package net.daxbau.injectr.inject
 
+import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.UiController
+import androidx.test.espresso.ViewAction
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.present
@@ -15,15 +21,19 @@ import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDi
 import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
 import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setProgressTo
 import io.fotoapparat.result.PhotoResult
+import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.StubPhotoManager
 import net.daxbau.injectr.runTest
 import net.daxbau.injectr.shouldEq
+import org.hamcrest.Matcher
+import org.hamcrest.Matchers.allOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.mock.declare
 import java.util.*
+
 
 @RunWith(AndroidJUnit4::class)
 class InjectFragmentTest : BaseFragmentTest() {
@@ -70,8 +80,9 @@ class InjectFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun takesPhoto() {
+    fun takesPhoto() = runTest {
         launch()
+        showBottomSheet()
         clickOn(R.id.takePhotoButton)
         verify(photoManager).takePhoto()
     }
@@ -119,17 +130,38 @@ class InjectFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun switchesCamera() {
+    fun switchesCamera() = runTest {
         launch()
+        showBottomSheet()
         clickOn(R.id.switchCameraButton)
         verify(vm).switchCamera()
     }
 
     @Test
-    fun togglesTorch() {
+    fun togglesTorch() = runTest {
         launch()
+        showBottomSheet()
         clickOn(R.id.toggleFlashButton)
         verify(vm).toggleTorch()
+    }
+
+    private suspend fun showBottomSheet() {
+        onView(withId(R.id.bottom_sheet_inject)).check(matches(allOf(isEnabled(), isClickable()))).perform(
+            object : ViewAction {
+                override fun getConstraints(): Matcher<View> {
+                    return isEnabled() // no constraints, they are checked above
+                }
+
+                override fun getDescription(): String {
+                    return "click plus button"
+                }
+
+                override fun perform(uiController: UiController, view: View) {
+                    view.performClick()
+                }
+            }
+        )
+        delay(100)
     }
 
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {

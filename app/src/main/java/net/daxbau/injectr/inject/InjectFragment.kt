@@ -13,6 +13,8 @@ import android.widget.NumberPicker
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import kotlinx.android.synthetic.main.bottom_sheet_inject.*
 import kotlinx.android.synthetic.main.fragment_inject.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -56,6 +58,10 @@ class InjectFragment : Fragment(), JustLog {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val bottomSheet = BottomSheetBehavior.from(bottom_sheet_inject)
+        bottom_sheet_inject.onClick {
+            bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+        }
         photoManager.bindView(camera_view)
         takePhotoButton.setOnClickListener {
             photoManager.takePhoto()
@@ -66,6 +72,7 @@ class InjectFragment : Fragment(), JustLog {
                     launch(Dispatchers.Main) {
                         injection_photo.setImageBitmap(bitmap)
                         injection_photo.rotation = -rotation
+                        bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                     }
                 } catch (e: NoPhotoAvailableError) {
                     runOnUiThread {

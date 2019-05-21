@@ -20,4 +20,5 @@
     <string name="injection_depth_value">%1$dmm</string>
     <string name="inject_switch_camera">Switch camera</string>
     <string name="inject_toggle_flash">Toggle flash</string>
+    <string name="camera">Camera</string>
 </resources>
