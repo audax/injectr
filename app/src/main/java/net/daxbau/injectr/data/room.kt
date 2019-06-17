@@ -1,6 +1,8 @@
 package net.daxbau.injectr.data
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
+import androidx.paging.PagedList
 import androidx.room.*
 import java.util.*
 
@@ -8,6 +10,9 @@ import java.util.*
 interface InjectionInfoDao {
     @Query("SELECT * FROM injection_info ORDER BY date DESC")
     fun getAll(): LiveData<List<InjectionInfo>>
+
+    @Query("SELECT * FROM injection_info ORDER BY date DESC")
+    fun getPaginated(): DataSource.Factory<Int, InjectionInfo>
 
     @Insert
     fun insertAll(vararg injections: InjectionInfo)

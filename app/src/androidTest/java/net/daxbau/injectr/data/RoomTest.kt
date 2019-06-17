@@ -2,6 +2,8 @@ package net.daxbau.injectr.data
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import net.daxbau.injectr.block
@@ -38,4 +40,14 @@ class RoomTest : KoinTest {
         injectionInfoDao.delete(element)
         injectionInfoDao.getAll().block() shouldEq listOf()
     }
+
+    @Test
+    fun injectionInfoCanBePaginated() {
+        val injectionInfo = InjectionInfo(0, Date(), 1, 1, 1, "comment")
+        injectionInfoDao.insertAll(injectionInfo)
+        val data: PagedList<InjectionInfo>? = injectionInfoDao.getPaginated().toLiveData(pageSize = 5).block()
+        val element = injectionInfo.copy(id = 1)
+        data shouldEq listOf(element)
+    }
+
 }
