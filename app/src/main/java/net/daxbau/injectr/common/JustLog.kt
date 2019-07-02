@@ -34,26 +34,26 @@ interface JustLoggerFactory {
 
 class AndroidLoggerWrapper(clazz: Class<*>) : JustLoggerWrapper {
 
-    private val TAG = clazz.simpleName
+    private val tag = clazz.simpleName
 
     override fun trace(msg: Any, vararg args: Any) {
-        Log.v(TAG, format(msg, args))
+        Log.v(tag, format(msg, args))
     }
 
     override fun info(msg: Any, vararg args: Any) {
-        Log.i(TAG, format(msg, args))
+        Log.i(tag, format(msg, args))
     }
 
     override fun debug(msg: Any, vararg args: Any) {
-        Log.d(TAG, format(msg, args))
+        Log.d(tag, format(msg, args))
     }
 
     override fun warn(msg: Any, vararg args: Any) {
-        Log.v(TAG, format(msg, args))
+        Log.v(tag, format(msg, args))
     }
 
     override fun error(msg: Any?, exception: Throwable?) {
-        Log.e(TAG, msg?.toString() ?: "No error msg", exception)
+        Log.e(tag, msg?.toString() ?: "No error msg", exception)
     }
 
     private fun format(msg: Any?, args: Array<out Any>) = msg.toString().let {
@@ -66,9 +66,9 @@ class AndroidLoggerWrapper(clazz: Class<*>) : JustLoggerWrapper {
 
 class PrintLogger(clazz: Class<*>): JustLoggerWrapper {
 
-    private val TAG = clazz.simpleName
+    private val tag = clazz.simpleName
 
-    private fun f(msg: Any, vararg args: Any) = "$TAG ${msg.toString().format(*args)}"
+    private fun f(msg: Any, vararg args: Any) = "$tag ${msg.toString().format(*args)}"
 
     override fun trace(msg: Any, vararg args: Any) {
         println("TRACE: " + f(msg, *args))

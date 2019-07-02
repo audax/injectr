@@ -18,4 +18,3 @@ data class InjectionInfo(
 ) {
     fun position() =  limb.toString() + ('A' + position).toString()
 }
-

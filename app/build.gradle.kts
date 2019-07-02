@@ -45,15 +45,15 @@ android {
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-    implementation("androidx.appcompat:appcompat:1.1.0-alpha05")
-    implementation("androidx.core:core-ktx:1.2.0-alpha01")
+    implementation("androidx.appcompat:appcompat:1.1.0-beta01")
+    implementation("androidx.core:core-ktx:1.2.0-alpha02")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("com.google.android.material:material:1.1.0-alpha06")
+    implementation("com.google.android.material:material:1.1.0-alpha07")
     implementation("androidx.constraintlayout:constraintlayout:1.1.3")
 
     implementation("io.reactivex.rxjava2:rxkotlin:2.3.0")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-    implementation("io.reactivex.rxjava2:rxjava:2.2.8")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.10")
 
     implementation("org.jetbrains.anko:anko:0.10.8")
 
@@ -71,7 +71,7 @@ dependencies {
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
     androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0")
-    androidTestImplementation("org.mockito:mockito-android:2.27.0")
+    androidTestImplementation("org.mockito:mockito-android:2.28.0")
 
     val lifecycleVersion = "2.0.0"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
@@ -118,8 +118,9 @@ dependencies {
         exclude("androidx.test.espresso")
     }
     androidTestImplementation("androidx.test.ext:junit:1.1.0")
-    implementation("com.airbnb.android:epoxy:3.4.0")
-    kapt("com.airbnb.android:epoxy-processor:3.4.0")
+    implementation("com.airbnb.android:epoxy:3.7.0")
+    implementation("com.airbnb.android:epoxy-paging:3.7.0")
+    kapt("com.airbnb.android:epoxy-processor:3.7.0")
 
     implementation("io.fotoapparat:fotoapparat:2.7.0")
     implementation("io.fotoapparat.fotoapparat:adapter-rxjava2:2.7.0")
