@@ -2,14 +2,13 @@ package net.daxbau.injectr.list
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.airbnb.epoxy.TypedEpoxyController
+import com.airbnb.epoxy.EpoxyModel
+import com.airbnb.epoxy.paging.PagedListEpoxyController
 import kotlinx.android.synthetic.main.injection_list_fragment.*
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
@@ -21,7 +20,6 @@ import org.koin.android.viewmodel.ext.android.viewModel
 class InjectionListFragment : Fragment() {
 
     private val vm: InjectionListViewModel by viewModel()
-    private var handler: Handler? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,33 +34,24 @@ class InjectionListFragment : Fragment() {
         injectFab.setOnClickListener {
             vm.addInjection()
         }
-        val handlerThread= HandlerThread("epoxy")
-        handlerThread.start()
-        val handler = Handler(handlerThread.looper)
-        this.handler = handler
         val injectionInfoListController = InjectionInfoListController(
-            requireContext().filesDir.absolutePath + '/', handler, vm)
+            requireContext().filesDir.absolutePath + '/', vm)
         injectionListRecyclerView.setController(injectionInfoListController)
         observe(vm.injectionList) {
-            injectionInfoListController.setData(it)
+            injectionInfoListController.submitList(it)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         vm.onDestroy()
-        handler?.removeCallbacksAndMessages(null)
-        handler?.looper?.quit()
     }
 
-    class InjectionInfoListController(
-        private val imageDir: String,
-        handler: Handler,
-        private val vm: InjectionListViewModel
-    )
-        : TypedEpoxyController<List<InjectionInfo>>(handler, handler), JustLog {
-        override fun buildModels(data: List<InjectionInfo>) {
-            data.forEach {
+    class InjectionInfoListController(private val imageDir: String, private val vm: InjectionListViewModel)
+        : PagedListEpoxyController<InjectionInfo>(), JustLog {
+
+        override fun buildItemModel(currentPosition: Int, item: InjectionInfo?): EpoxyModel<*> {
+            return item!!.let {
                 val drawable = if (it.photoFileName != null) {
                     val path = imageDir + it.photoFileName
                     info("photo path $path")
@@ -71,7 +60,7 @@ class InjectionListFragment : Fragment() {
                     info("no photo")
                     null
                 }
-                injectionInfoItem {
+                InjectionInfoItemModel_().apply {
                     id(it.id)
                     depth(it.depth)
                     date(it.date)

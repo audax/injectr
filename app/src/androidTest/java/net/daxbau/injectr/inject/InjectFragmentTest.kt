@@ -25,6 +25,7 @@ import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.StubPhotoManager
+import net.daxbau.injectr.data.InjectionInfo
 import net.daxbau.injectr.runTest
 import net.daxbau.injectr.shouldEq
 import org.hamcrest.Matcher
@@ -178,5 +179,6 @@ class InjectFragmentTest : BaseFragmentTest() {
         override suspend fun confirmSave() { }
         override fun switchCamera() {}
         override fun toggleTorch() {}
+        override fun loadInjectionInfo(injectionInfo: InjectionInfo) { }
     }
 }

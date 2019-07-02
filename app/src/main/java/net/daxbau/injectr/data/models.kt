@@ -21,4 +21,3 @@ data class InjectionInfo(
 ) : Parcelable {
     fun position() =  limb.toString() + ('A' + position).toString()
 }
-
