@@ -2,7 +2,6 @@ package net.daxbau.injectr.data
 
 import androidx.lifecycle.LiveData
 import androidx.paging.DataSource
-import androidx.paging.PagedList
 import androidx.room.*
 import java.util.*
 
