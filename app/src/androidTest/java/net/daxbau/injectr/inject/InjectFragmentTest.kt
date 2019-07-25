@@ -20,7 +20,6 @@ import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDi
 import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDialogPositiveButton
 import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
 import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setProgressTo
-import io.fotoapparat.result.PhotoResult
 import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
@@ -143,6 +142,7 @@ class InjectFragmentTest : BaseFragmentTest() {
         launch()
         showBottomSheet()
         clickOn(R.id.toggleFlashButton)
+        delay(100)
         verify(vm).toggleTorch()
     }
 
@@ -171,7 +171,6 @@ class InjectFragmentTest : BaseFragmentTest() {
         override var limb: Int = 0
         override var position: Int = 0
         override var comment: String = ""
-        override var photo: PhotoResult? = null
         val confirmationRequiredProxy = MutableLiveData<Boolean>()
         override val confirmationRequired: LiveData<Boolean> = confirmationRequiredProxy
 

@@ -7,7 +7,6 @@ import androidx.test.platform.app.InstrumentationRegistry
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import net.daxbau.injectr.R
 import net.daxbau.injectr.block
 import net.daxbau.injectr.data.AppDatabase
 import net.daxbau.injectr.data.InjectionInfo
@@ -43,7 +42,9 @@ class InjectionListViewModelTest {
     @Test
     fun navigatesToInjectView() {
         vm.addInjection()
-        verify(mockNav).navigate(R.id.inject)
+        verify(mockNav).navigate(
+            InjectionListFragmentDirections.actionInjectionListToInject(null)
+        )
     }
 
     @Test

@@ -12,11 +12,13 @@ import com.nhaarman.mockitokotlin2.verify
 import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
 import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import com.schibsted.spain.barista.interaction.BaristaListInteractions.clickListItem
+import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
 import net.daxbau.injectr.data.AppDatabase
 import net.daxbau.injectr.data.InjectionInfo
 import net.daxbau.injectr.data.InjectionInfoDao
+import net.daxbau.injectr.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.mock.declare
@@ -41,11 +43,12 @@ class InjectionListFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun testLaunch() {
+    fun testLaunch() = runTest {
         launch()
         assertThat(activityRule.activity.nav, present())
         verify(vm, atLeastOnce()).setNavController(activityRule.activity.nav)
         activityRule.finishActivity()
+        delay(300)
         verify(vm, atLeastOnce()).onDestroy()
     }
 

@@ -34,8 +34,10 @@ class InjectionListFragment : Fragment() {
         injectFab.setOnClickListener {
             vm.addInjection()
         }
+        val imageDir = requireContext().filesDir.absolutePath + '/'
         val injectionInfoListController = InjectionInfoListController(
-            requireContext().filesDir.absolutePath + '/', vm)
+            imageDir, vm
+        )
         injectionListRecyclerView.setController(injectionInfoListController)
         observe(vm.injectionList) {
             injectionInfoListController.submitList(it)

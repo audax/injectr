@@ -2,7 +2,6 @@ package net.daxbau.injectr.inject
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.fotoapparat.result.PhotoResult
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.NavigatingViewModel
 import net.daxbau.injectr.data.InjectionInfo
@@ -15,7 +14,7 @@ abstract class InjectViewModel : NavigatingViewModel() {
     abstract var position: Int
     abstract var date: Date?
     abstract var comment: String
-    abstract var photo: PhotoResult?
+    abstract var photoFileName: String?
     abstract val confirmationRequired: LiveData<Boolean>
     abstract suspend fun save()
     abstract suspend fun confirmSave()
@@ -32,7 +31,7 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
     override var position: Int = 0
     override var date: Date? = null
     override var comment: String = ""
-    override var photo: PhotoResult? = null
+    override var photoFileName: String? = null
 
     private val _confirmationRequired = MutableLiveData<Boolean>().apply { value = false }
     override val confirmationRequired: LiveData<Boolean> = _confirmationRequired
@@ -50,17 +49,20 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
         position = injectionInfo.position
         date = injectionInfo.date
         comment = injectionInfo.comment
+        photoFileName = injectionInfo.photoFileName
     }
 
     private suspend fun internalSave(force: Boolean = false) {
-        val fileName = try {
-            photoManager.save()
-        } catch (e: NoPhotoAvailableError) {
-            if (!force) {
-                _confirmationRequired.postValue(true)
-                return
-            } else {
-                null
+        if (photoFileName == null) {
+            photoFileName = try {
+                photoManager.save()
+            } catch (e: NoPhotoAvailableError) {
+                if (!force) {
+                    _confirmationRequired.postValue(true)
+                    return
+                } else {
+                    null
+                }
             }
         }
         val injectionDate = date ?: run {
@@ -68,7 +70,23 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
             date = now
             now
         }
-        injectionInfoDao.insertAll(InjectionInfo(0, injectionDate, depth, limb, position, comment, fileName))
+        injectionInfo?.let {
+            injectionInfoDao.update(
+                it.copy(
+                    date = injectionDate,
+                    depth = depth,
+                    limb = limb,
+                    position = position,
+                    comment = comment,
+                    photoFileName = photoFileName
+                )
+            )
+        } ?: run {
+            val injection = InjectionInfo(
+                0, injectionDate, depth, limb, position, comment, photoFileName
+            )
+            injectionInfoDao.insertAll(injection)
+        }
         nav?.navigate(R.id.injectionList)
     }
 

@@ -16,6 +16,9 @@ interface InjectionInfoDao {
     @Insert
     fun insertAll(vararg injections: InjectionInfo)
 
+    @Update
+    fun update(injection: InjectionInfo)
+
     @Delete
     fun delete(injection: InjectionInfo)
 }

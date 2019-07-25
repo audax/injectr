@@ -1,6 +1,7 @@
 package net.daxbau.injectr.inject
 
 import android.content.DialogInterface
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -60,8 +61,12 @@ class InjectFragment : Fragment(), JustLog {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val imageDir = requireContext().filesDir.absolutePath + '/'
         args.injectionInfo?.let {
             vm.loadInjectionInfo(it)
+        }
+        vm.photoFileName?.let { fileName ->
+            injection_photo.setImageDrawable(Drawable.createFromPath(imageDir + fileName))
         }
         val bottomSheet = BottomSheetBehavior.from(bottom_sheet_inject)
         bottom_sheet_inject.onClick {
