@@ -19,8 +19,8 @@ android {
         applicationId = "net.daxbau.injectr"
         minSdkVersion(26)
         targetSdkVersion(28)
-        versionCode = 4
-        versionName = "4"
+        versionCode = 5
+        versionName = "5"
         // testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "net.daxbau.injectr.CustomTestRunner"
 
