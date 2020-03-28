@@ -9,6 +9,7 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.present
 import com.nhaarman.mockitokotlin2.*
@@ -31,7 +32,7 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.test.mock.declare
+import org.koin.test.mock.declareModule
 import java.util.*
 
 
@@ -43,7 +44,7 @@ class InjectFragmentTest : BaseFragmentTest() {
     private val photoManager = spy<StubPhotoManager>()
 
     override fun installMocks() {
-        declare {
+        declareModule {
             single<InjectViewModel>(override = true) { vm }
             single<PhotoManager>(override = true) { photoManager }
         }
@@ -161,7 +162,9 @@ class InjectFragmentTest : BaseFragmentTest() {
                 }
             }
         )
-        delay(100)
+        val fragment: InjectFragment = findFragment()
+        while (fragment.bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)
+            delay(50)
     }
 
     private open class StubInjectionListFragmentViewModel : InjectViewModel() {

@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.SeekBar
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -56,9 +57,12 @@ class InjectFragment : Fragment(), JustLog {
         photoManager.stop()
     }
 
+    internal lateinit var bottomSheetBehavior: BottomSheetBehavior<CoordinatorLayout>
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val bottomSheet = BottomSheetBehavior.from(bottom_sheet_inject)
+        bottomSheetBehavior = bottomSheet
         bottom_sheet_inject.onClick {
             bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
         }
@@ -158,5 +162,9 @@ class InjectFragment : Fragment(), JustLog {
     override fun onDestroy() {
         super.onDestroy()
         vm.onDestroy()
+    }
+
+    companion object {
+        const val TAG = "Inject"
     }
 }

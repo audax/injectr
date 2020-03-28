@@ -20,7 +20,7 @@ import net.daxbau.injectr.data.InjectionInfoDao
 import net.daxbau.injectr.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.test.mock.declare
+import org.koin.test.mock.declareModule
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
@@ -36,7 +36,7 @@ class InjectionListFragmentTest : BaseFragmentTest() {
     private val vm = spy(StubInjectionListFragmentViewModel(injectionInfoDao))
 
     override fun installMocks() {
-        declare {
+        declareModule {
             single<InjectionListViewModel>(override = true) { vm }
         }
     }

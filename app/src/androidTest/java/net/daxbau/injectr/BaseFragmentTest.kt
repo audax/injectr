@@ -15,6 +15,11 @@ abstract class BaseFragmentTest: KoinTest {
         }
     }
 
+    protected inline fun <reified T> findFragment(): T {
+        val navHostFragment = activityRule.activity.supportFragmentManager.fragments.first()
+        return navHostFragment.childFragmentManager.fragments.find { it is T } as T
+    }
+
     protected abstract val fragmentId: Int
 
     private fun navigate(nav: NavController) {
