@@ -1,6 +1,8 @@
 package net.daxbau.injectr
 
 import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
@@ -18,10 +20,13 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.daxbau.injectr.common.JustLog
 import org.koin.android.viewmodel.ext.android.viewModel
+import java.io.FileOutputStream
+import java.io.IOException
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, JustLog {
 
     private val permissions = arrayOf(Manifest.permission.CAMERA)
 
@@ -80,14 +85,45 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 GlobalScope.launch { vm.purgeOldPhotos() }
                 true
             }
+            R.id.action_export -> {
+                exportData()
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
+    private fun exportData() {
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.type = "application/json"
+        intent.putExtra(Intent.EXTRA_TITLE, "injectr_export.json")
+        startActivityForResult(intent, REQUEST_EXPORT)
+    }
 
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+        val uri = data?.data ?: return
+        try {
+            contentResolver.openFileDescriptor(uri, "w")?.use { pfd ->
+                FileOutputStream(pfd.fileDescriptor).use { out ->
+                    out.write("TEST".toByteArray())
+                }
+            }
+        } catch (e: IOException) {
+            error("Cannot export db", e)
+        }
+    }
+
+    companion object {
+        private const val REQUEST_EXPORT = 1
     }
 }

@@ -6,6 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_purge">Purge old photos</string>
+    <string name="action_export">Export database</string>
 
     <string name="save_injection_button">Save</string>
     <string name="inject_photo">Take photo</string>
