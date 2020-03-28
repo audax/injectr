@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.NumberPicker
 import android.widget.SeekBar
+import androidx.annotation.VisibleForTesting
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -38,6 +39,10 @@ class InjectFragment : Fragment(), JustLog {
     private val vm: InjectViewModel by viewModel()
     private val photoManager: PhotoManager by inject()
 
+    @VisibleForTesting
+    internal lateinit var bottomSheetBehavior: BottomSheetBehavior<CoordinatorLayout>
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -56,8 +61,6 @@ class InjectFragment : Fragment(), JustLog {
         super.onStop()
         photoManager.stop()
     }
-
-    internal lateinit var bottomSheetBehavior: BottomSheetBehavior<CoordinatorLayout>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -30,9 +30,12 @@ class RoomTest : KoinTest {
 
     private val injectionInfoDao = db.injectionInfoDao()
 
+    private val injectionInfo = InjectionInfo(0, Date(), 1, 1, 1, "comment")
+    private val oldTime = Calendar.Builder().setDate(2000, 10, 10).build().time
+    private val oldInjectionInfo =
+        InjectionInfo(0, oldTime, 1, 1, 1, "comment", photoFileName = "foo.png")
     @Test
     fun injectionInfoBasicOperations() {
-        val injectionInfo = InjectionInfo(0, Date(), 1, 1, 1, "comment")
         injectionInfoDao.insertAll(injectionInfo)
         val data = injectionInfoDao.getAll().block()
         val element = injectionInfo.copy(id = 1)
@@ -43,12 +46,27 @@ class RoomTest : KoinTest {
 
     @Test
     fun injectionInfoCanBePaginated() {
-        val injectionInfo = InjectionInfo(0, Date(), 1, 1, 1, "comment")
         injectionInfoDao.insertAll(injectionInfo)
         val data: PagedList<InjectionInfo>? = injectionInfoDao.getPaginated().toLiveData(pageSize = 5).block()
         val element = injectionInfo.copy(id = 1)
         data shouldEq listOf(element)
     }
 
+    @Test
+    fun findOldInjections() {
+        injectionInfoDao.insertAll(injectionInfo, oldInjectionInfo)
+        injectionInfoDao.findOlderThan(
+            Calendar.Builder().setDate(2001, 10, 10).build().time
+        ) shouldEq listOf(oldInjectionInfo.copy(id = 2))
+    }
+
+    @Test
+    fun updateInjections() {
+        injectionInfoDao.insertAll(oldInjectionInfo)
+        val inserted = injectionInfoDao.getAll().block()!!.first()
+        val update = inserted.copy(photoFileName = null)
+        injectionInfoDao.updateAll(update)
+        injectionInfoDao.getAll().block()!!.first() shouldEq update
+    }
 
 }

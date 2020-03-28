@@ -11,7 +11,16 @@ interface InjectionInfoDao {
     fun getAll(): LiveData<List<InjectionInfo>>
 
     @Query("SELECT * FROM injection_info ORDER BY date DESC")
+    fun getAllEager(): List<InjectionInfo>
+
+    @Query("SELECT * FROM injection_info where date <= :date ORDER BY date DESC")
+    fun findOlderThan(date: Date): List<InjectionInfo>
+
+    @Query("SELECT * FROM injection_info ORDER BY date DESC")
     fun getPaginated(): DataSource.Factory<Int, InjectionInfo>
+
+    @Update
+    fun updateAll(vararg injections: InjectionInfo)
 
     @Insert
     fun insertAll(vararg injections: InjectionInfo)

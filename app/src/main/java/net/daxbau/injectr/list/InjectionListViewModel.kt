@@ -14,7 +14,9 @@ abstract class InjectionListViewModel : NavigatingViewModel() {
     abstract fun addInjection()
 }
 
-class InjectionListViewModelImpl (injectionInfoDao: InjectionInfoDao): InjectionListViewModel() {
+class InjectionListViewModelImpl(
+    injectionInfoDao: InjectionInfoDao
+) : InjectionListViewModel() {
 
     private val paginationConfig = Config(
         pageSize = 3,
@@ -29,5 +31,4 @@ class InjectionListViewModelImpl (injectionInfoDao: InjectionInfoDao): Injection
         info("Navigating to inject view")
         nav?.navigate(R.id.inject)
     }
-
 }

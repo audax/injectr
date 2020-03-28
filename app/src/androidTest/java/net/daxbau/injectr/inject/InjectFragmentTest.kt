@@ -51,9 +51,10 @@ class InjectFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun testLaunch() {
+    fun testLaunch() = runTest {
         launch()
         assertThat(activityRule.activity.nav, present())
+        delay(100)
         verify(vm, atLeastOnce()).setNavController(activityRule.activity.nav)
     }
 
@@ -115,6 +116,7 @@ class InjectFragmentTest : BaseFragmentTest() {
     fun canConfirm() = runTest {
         launch()
         vm.confirmationRequiredProxy.postValue(true)
+        delay(100)
         assertContains("Save without photo?")
         clickDialogPositiveButton()
         verify(vm).confirmSave()

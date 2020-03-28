@@ -51,5 +51,4 @@ class InjectionListViewModelTest {
         injectionInfoDao.insertAll(injectionInfo)
         vm.injectionList.block()?.get(0) shouldEq injectionInfo
     }
-
 }
