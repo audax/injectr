@@ -88,11 +88,16 @@
                 android:layout_height="wrap_content"
                 app:elevation="1000dp"
                 android:id="@+id/saveInjectionButton"
-                tools:text="@string/save_injection_button" android:text="@string/save_injection_button"
-                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                tools:text="@string/save_injection_button"
+                android:text="@string/save_injection_button"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginEnd="8dp"
                 android:layout_marginBottom="32dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                android:src="@drawable/ic_add_black_24dp"/>
+                android:src="@drawable/ic_add_black_24dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <include layout="@layout/bottom_sheet_inject"/>
+
+    <include
+            android:id="@+id/bottom_sheet_include"
+            layout="@layout/bottom_sheet_inject" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

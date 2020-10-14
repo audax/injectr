@@ -16,14 +16,14 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.bottom_sheet_inject.*
-import kotlinx.android.synthetic.main.fragment_inject.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
 import net.daxbau.injectr.common.observe
+import net.daxbau.injectr.databinding.BottomSheetInjectBinding
+import net.daxbau.injectr.databinding.FragmentInjectBinding
 import org.jetbrains.anko.noButton
 import org.jetbrains.anko.sdk27.coroutines.onClick
 import org.jetbrains.anko.support.v4.alert
@@ -39,6 +39,12 @@ class InjectFragment : Fragment(), JustLog {
     private val vm: InjectViewModel by viewModel()
     private val photoManager: PhotoManager by inject()
 
+    private var _binding: FragmentInjectBinding? = null
+    private val binding: FragmentInjectBinding get() = _binding!!
+
+    private var _bottomSheetBinding: BottomSheetInjectBinding? = null
+    private val bottomSheetBinding: BottomSheetInjectBinding get() = _bottomSheetBinding!!
+
     @VisibleForTesting
     internal lateinit var bottomSheetBehavior: BottomSheetBehavior<CoordinatorLayout>
 
@@ -48,8 +54,9 @@ class InjectFragment : Fragment(), JustLog {
         savedInstanceState: Bundle?
     ): View? {
         vm.setNavController(findNavController())
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_inject, container, false)
+        _binding = FragmentInjectBinding.inflate(inflater, container, false)
+        _bottomSheetBinding = binding.bottomSheetInclude
+        return binding.root
     }
 
     override fun onStart() {
@@ -64,77 +71,88 @@ class InjectFragment : Fragment(), JustLog {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomSheet = BottomSheetBehavior.from(bottom_sheet_inject)
-        bottomSheetBehavior = bottomSheet
-        bottom_sheet_inject.onClick {
-            bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
-        }
-        photoManager.bindView(camera_view)
-        takePhotoButton.setOnClickListener {
-            photoManager.takePhoto()
-            GlobalScope.launch {
-                info("setting image view")
-                try {
-                    val (bitmap, rotation) = photoManager.toBitmap()
-                    launch(Dispatchers.Main) {
-                        injection_photo.setImageBitmap(bitmap)
-                        injection_photo.rotation = -rotation
-                        bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
-                    }
-                } catch (e: NoPhotoAvailableError) {
-                    runOnUiThread {
-                        toast(R.string.injection_photo_error)
+        with(binding) {
+            val bottomSheet = BottomSheetBehavior.from(bottomSheetBinding.root)
+            bottomSheetBehavior = bottomSheet
+            bottomSheetBinding.bottomSheetInject.onClick {
+                bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+            photoManager.bindView(bottomSheetBinding.cameraView)
+            bottomSheetBinding.takePhotoButton.setOnClickListener {
+                photoManager.takePhoto()
+                GlobalScope.launch {
+                    info("setting image view")
+                    try {
+                        val (bitmap, rotation) = photoManager.toBitmap()
+                        launch(Dispatchers.Main) {
+                            injectionPhoto.setImageBitmap(bitmap)
+                            injectionPhoto.rotation = -rotation
+                            bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
+                        }
+                    } catch (e: NoPhotoAvailableError) {
+                        runOnUiThread {
+                            toast(R.string.injection_photo_error)
+                        }
                     }
                 }
             }
-        }
-        depthSeekBar.progress = vm.depth
-        injection_slider_label.text = getString(R.string.injection_depth_label, vm.depth)
-        depthSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
-                vm.depth = progress
-                injection_slider_label.text = getString(R.string.injection_depth_label, progress)
+            depthSeekBar.progress = vm.depth
+            injectionSliderLabel.text = getString(R.string.injection_depth_label, vm.depth)
+            depthSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    vm.depth = progress
+                    injectionSliderLabel.text =
+                        getString(R.string.injection_depth_label, progress)
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar) {}
+            })
+
+            saveInjectionButton.setOnClickListener {
+                GlobalScope.launch {
+                    vm.save()
+                }
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar) { }
-            override fun onStopTrackingTouch(seekBar: SeekBar) { }
-        })
-
-        saveInjectionButton.setOnClickListener {
-            GlobalScope.launch {
-                vm.save()
+            injectionPositionLimb.minValue = 0
+            injectionPositionLimb.maxValue = 7
+            injectionPositionLimb.value = vm.limb
+            injectionPositionLimb.setOnValueChangedListener { _, _, newVal -> vm.limb = newVal }
+            injectionPositionNr.minValue = 0
+            injectionPositionNr.maxValue = 24
+            injectionPositionNr.setFormatter {
+                ('A' + it).toString()
             }
-        }
-        injection_position_limb.minValue = 0
-        injection_position_limb.maxValue = 7
-        injection_position_limb.value = vm.limb
-        injection_position_limb.setOnValueChangedListener { _, _, newVal -> vm.limb = newVal }
-        injection_position_nr.minValue = 0
-        injection_position_nr.maxValue = 24
-        injection_position_nr.setFormatter {
-            ('A' + it).toString()
-        }
 
-        numberPickerFormatWorkaround()
+            numberPickerFormatWorkaround()
 
-        injection_position_nr.value = vm.position
-        injection_position_nr.setOnValueChangedListener { _, _, newVal -> vm.position = newVal }
-        injection_comment.setText(vm.comment)
-        injection_comment.addTextChangedListener(object: TextWatcher {
-            override fun afterTextChanged(s: Editable?) { }
+            injectionPositionNr.value = vm.position
+            injectionPositionNr.setOnValueChangedListener { _, _, newVal -> vm.position = newVal }
+            injectionComment.setText(vm.comment)
+            injectionComment.addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {}
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) { }
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                vm.comment = s.toString()
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    vm.comment = s.toString()
+                }
+            })
+
+            bottomSheetBinding.switchCameraButton.onClick {
+                vm.switchCamera()
             }
-        })
 
-        switchCameraButton.onClick {
-            vm.switchCamera()
-        }
+            bottomSheetBinding.toggleFlashButton.onClick {
+                vm.toggleTorch()
+            }
 
-        toggleFlashButton.onClick {
-            vm.toggleTorch()
         }
 
         var alertDialog: DialogInterface? = null
@@ -146,7 +164,7 @@ class InjectFragment : Fragment(), JustLog {
                             vm.confirmSave()
                         }
                     }
-                    noButton {  }
+                    noButton { }
                 }.show()
             } else {
                 alertDialog?.cancel()
@@ -158,7 +176,7 @@ class InjectFragment : Fragment(), JustLog {
         // see https://issuetracker.google.com/issues/36952035
         val f = NumberPicker::class.java.getDeclaredField("mInputText")
         f.isAccessible = true
-        val inputText = f.get(injection_position_nr) as EditText
+        val inputText = f.get(binding.injectionPositionNr) as EditText
         inputText.filters = arrayOfNulls<InputFilter>(0)
     }
 

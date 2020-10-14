@@ -149,21 +149,22 @@ class InjectFragmentTest : BaseFragmentTest() {
     }
 
     private suspend fun showBottomSheet() {
-        onView(withId(R.id.bottom_sheet_inject)).check(matches(allOf(isEnabled(), isClickable()))).perform(
-            object : ViewAction {
-                override fun getConstraints(): Matcher<View> {
-                    return isEnabled() // no constraints, they are checked above
-                }
+        onView(withId(R.id.bottom_sheet_include)).check(matches(allOf(isEnabled(), isClickable())))
+            .perform(
+                object : ViewAction {
+                    override fun getConstraints(): Matcher<View> {
+                        return isEnabled() // no constraints, they are checked above
+                    }
 
-                override fun getDescription(): String {
-                    return "click plus button"
-                }
+                    override fun getDescription(): String {
+                        return "click plus button"
+                    }
 
-                override fun perform(uiController: UiController, view: View) {
-                    view.performClick()
+                    override fun perform(uiController: UiController, view: View) {
+                        view.performClick()
+                    }
                 }
-            }
-        )
+            )
         val fragment: InjectFragment = findFragment()
         while (fragment.bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)
             delay(50)

@@ -15,6 +15,10 @@ kapt {
 
 android {
     compileSdkVersion(28)
+
+    buildFeatures {
+        viewBinding = true
+    }
     defaultConfig {
         applicationId = "net.daxbau.injectr"
         minSdkVersion(26)
