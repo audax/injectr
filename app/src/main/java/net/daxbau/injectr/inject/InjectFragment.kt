@@ -59,14 +59,14 @@ class InjectFragment : Fragment(), JustLog {
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
-        photoManager.start()
+    override fun onPause() {
+        super.onPause()
+        photoManager.stop()
     }
 
-    override fun onStop() {
-        super.onStop()
-        photoManager.stop()
+    override fun onResume() {
+        super.onResume()
+        photoManager.start()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
