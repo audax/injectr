@@ -44,8 +44,9 @@ android {
         }
     }
     packagingOptions {
-        // See https://github.com/Kotlin/kotlinx.coroutines/issues/1064
-        pickFirst("META-INF/atomicfu.kotlin_module")
+        resources {
+            pickFirsts += setOf("META-INF/atomicfu.kotlin_module")
+        }
     }
     testOptions {
         animationsDisabled = true
