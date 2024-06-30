@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("android.extensions")
     kotlin("kapt")
     id("androidx.navigation.safeargs.kotlin")
 
@@ -14,7 +13,11 @@ kapt {
 }
 
 android {
-    compileSdkVersion(28)
+    compileSdk = 34
+
+    buildFeatures {
+        viewBinding = true
+    }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -53,6 +56,7 @@ android {
     }
     sourceSets["androidTest"].java.srcDir("src/sharedTest/java")
     sourceSets["test"].java.srcDir("src/sharedTest/java")
+    namespace = "net.daxbau.injectr"
 }
 
 dependencies {
@@ -67,8 +71,6 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
     implementation("io.reactivex.rxjava2:rxjava:2.2.20")
-
-    implementation("org.jetbrains.anko:anko:0.10.8")
 
     val coroutinesVersion = "1.2.0"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$coroutinesVersion")
@@ -113,12 +115,13 @@ dependencies {
     // optional - RxJava support
     //implementation("androidx.paging:paging-rxjava2-ktx:$pagingVersion")
 
-    implementation("org.koin:koin-android:2.1.5")
-    implementation("org.koin:koin-android-viewmodel:2.1.5")
-    testImplementation("org.koin:koin-test:2.1.5") {
+    implementation(platform("io.insert-koin:koin-bom:3.5.6"))
+    implementation("io.insert-koin:koin-core")
+    implementation("io.insert-koin:koin-android")
+    testImplementation("org.koin:koin-test") {
         exclude("org.mockito")
     }
-    androidTestImplementation("org.koin:koin-test:2.1.5") {
+    androidTestImplementation("org.koin:koin-test") {
         exclude("org.mockito")
     }
 
@@ -141,6 +144,6 @@ dependencies {
 
 repositories {
     mavenCentral()
-    maven("http://repository.jetbrains.com/all")
+    maven("https://repository.jetbrains.com/all")
     maven("https://jitpack.io")
 }
