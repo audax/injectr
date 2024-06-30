@@ -4,13 +4,13 @@ import androidx.paging.toLiveData
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import com.adevinta.android.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
+import com.adevinta.android.barista.interaction.BaristaClickInteractions.clickOn
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.present
 import com.nhaarman.mockitokotlin2.atLeastOnce
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
-import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.assertRecyclerViewItemCount
-import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
 import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
@@ -20,7 +20,8 @@ import net.daxbau.injectr.data.InjectionInfoDao
 import net.daxbau.injectr.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.test.mock.declareModule
+import org.koin.test.mock.declare
+import org.koin.test.mock.declareMock
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
@@ -36,14 +37,12 @@ class InjectionListFragmentTest : BaseFragmentTest() {
     private val vm = spy(StubInjectionListFragmentViewModel(injectionInfoDao))
 
     override fun installMocks() {
-        declareModule {
-            single<InjectionListViewModel>(override = true) { vm }
-        }
+        declare<InjectionListViewModel> { vm }
     }
 
     @Test
     fun testLaunch() = runTest {
-        launch()
+        launchActivity()
         assertThat(activityRule.activity.nav, present())
         verify(vm, atLeastOnce()).setNavController(activityRule.activity.nav)
         activityRule.finishActivity()
@@ -53,7 +52,7 @@ class InjectionListFragmentTest : BaseFragmentTest() {
 
     @Test
     fun fabIsConnected() {
-        launch()
+        launchActivity()
         clickOn(R.id.injectFab)
         verify(vm).addInjection()
     }
@@ -65,7 +64,7 @@ class InjectionListFragmentTest : BaseFragmentTest() {
             InjectionInfo(2, Date(), 8, 1, 1, "B"),
             InjectionInfo(3, Date(), 2, 2, 4, "C")
         )
-        launch()
+        launchActivity()
         assertRecyclerViewItemCount(R.id.injectionListRecyclerView, 3)
     }
 

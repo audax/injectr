@@ -27,7 +27,7 @@ class InjectionListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         vm.setNavController(findNavController())
         _binding = InjectionListFragmentBinding.inflate(inflater, container, false)
         return binding.root

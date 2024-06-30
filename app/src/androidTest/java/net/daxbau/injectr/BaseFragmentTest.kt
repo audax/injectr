@@ -2,6 +2,7 @@ package net.daxbau.injectr
 
 import androidx.navigation.NavController
 import androidx.test.rule.ActivityTestRule
+import androidx.test.rule.GrantPermissionRule
 import org.junit.Rule
 import org.koin.test.KoinTest
 
@@ -15,6 +16,11 @@ abstract class BaseFragmentTest: KoinTest {
         }
     }
 
+    @get:Rule val writeExternalPermission: GrantPermissionRule
+        get() = GrantPermissionRule.grant("android.permission.CAMERA")
+
+
+
     protected inline fun <reified T> findFragment(): T {
         val navHostFragment = activityRule.activity.supportFragmentManager.fragments.first()
         return navHostFragment.childFragmentManager.fragments.find { it is T } as T
@@ -23,12 +29,14 @@ abstract class BaseFragmentTest: KoinTest {
     protected abstract val fragmentId: Int
 
     private fun navigate(nav: NavController) {
-        nav.navigate(fragmentId)
+        activityRule.runOnUiThread {
+            nav.navigate(fragmentId)
+        }
     }
 
     protected abstract fun installMocks()
 
-    protected fun launch() {
+    protected fun launchActivity() {
         activityRule.launchActivity(null)
         navigate(activityRule.activity.nav)
     }

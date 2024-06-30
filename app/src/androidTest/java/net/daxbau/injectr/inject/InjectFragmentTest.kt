@@ -9,18 +9,18 @@ import androidx.test.espresso.ViewAction
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import com.adevinta.android.barista.assertion.BaristaProgressBarAssertions.assertProgress
+import com.adevinta.android.barista.assertion.BaristaVisibilityAssertions.assertContains
+import com.adevinta.android.barista.assertion.BaristaVisibilityAssertions.assertNotContains
+import com.adevinta.android.barista.interaction.BaristaClickInteractions.clickOn
+import com.adevinta.android.barista.interaction.BaristaDialogInteractions.clickDialogNegativeButton
+import com.adevinta.android.barista.interaction.BaristaDialogInteractions.clickDialogPositiveButton
+import com.adevinta.android.barista.interaction.BaristaEditTextInteractions.writeTo
+import com.adevinta.android.barista.interaction.BaristaSeekBarInteractions.setProgressTo
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.present
 import com.nhaarman.mockitokotlin2.*
-import com.schibsted.spain.barista.assertion.BaristaProgressBarAssertions.assertProgress
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertContains
-import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotContains
-import com.schibsted.spain.barista.interaction.BaristaClickInteractions.clickOn
-import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDialogNegativeButton
-import com.schibsted.spain.barista.interaction.BaristaDialogInteractions.clickDialogPositiveButton
-import com.schibsted.spain.barista.interaction.BaristaEditTextInteractions.writeTo
-import com.schibsted.spain.barista.interaction.BaristaSeekBarInteractions.setProgressTo
 import io.fotoapparat.result.PhotoResult
 import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
@@ -32,7 +32,8 @@ import org.hamcrest.Matcher
 import org.hamcrest.Matchers.allOf
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.test.mock.declareModule
+import org.koin.test.mock.declare
+import org.koin.test.mock.declareMock
 import java.util.*
 
 
@@ -44,15 +45,13 @@ class InjectFragmentTest : BaseFragmentTest() {
     private val photoManager = spy<StubPhotoManager>()
 
     override fun installMocks() {
-        declareModule {
-            single<InjectViewModel>(override = true) { vm }
-            single<PhotoManager>(override = true) { photoManager }
-        }
+        declare<InjectViewModel> { vm }
+        declare<PhotoManager> { photoManager }
     }
 
     @Test
     fun testLaunch() = runTest {
-        launch()
+        launchActivity()
         assertThat(activityRule.activity.nav, present())
         delay(100)
         verify(vm, atLeastOnce()).setNavController(activityRule.activity.nav)
@@ -60,7 +59,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
     @Test
     fun setDepth() {
-        launch()
+        launchActivity()
         setProgressTo(R.id.depthSeekBar, 6)
         vm.depth shouldEq 6
         assertContains(R.id.injection_slider_label, "6mm")
@@ -69,21 +68,21 @@ class InjectFragmentTest : BaseFragmentTest() {
     @Test
     fun getsDepthFromVM() {
         vm.depth = 8
-        launch()
+        launchActivity()
         assertProgress(R.id.depthSeekBar, 8)
         assertContains(R.id.injection_slider_label, "8mm")
     }
 
     @Test
     fun saves() = runTest {
-        launch()
+        launchActivity()
         clickOn(R.id.saveInjectionButton)
         verify(vm).save()
     }
 
     @Test
     fun takesPhoto() = runTest {
-        launch()
+        launchActivity()
         showBottomSheet()
         clickOn(R.id.takePhotoButton)
         verify(photoManager).takePhoto()
@@ -91,7 +90,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
     @Test
     fun setsComment() {
-        launch()
+        launchActivity()
         writeTo(R.id.injection_comment, "comment")
         vm.comment shouldEq "comment"
     }
@@ -99,13 +98,13 @@ class InjectFragmentTest : BaseFragmentTest() {
     @Test
     fun getsCommentFromVM() {
         vm.comment = "comment"
-        launch()
+        launchActivity()
         assertContains(R.id.injection_comment, "comment")
     }
 
     @Test
     fun asksForConfirmation() {
-        launch()
+        launchActivity()
         vm.confirmationRequiredProxy.postValue(true)
         assertContains("Save without photo?")
         vm.confirmationRequiredProxy.postValue(false)
@@ -114,7 +113,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
     @Test
     fun canConfirm() = runTest {
-        launch()
+        launchActivity()
         vm.confirmationRequiredProxy.postValue(true)
         delay(100)
         assertContains("Save without photo?")
@@ -124,7 +123,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
     @Test
     fun canCancel() {
-        launch()
+        launchActivity()
         vm.confirmationRequiredProxy.postValue(true)
         assertContains("Save without photo?")
         reset(vm)
@@ -134,7 +133,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
     @Test
     fun switchesCamera() = runTest {
-        launch()
+        launchActivity()
         showBottomSheet()
         clickOn(R.id.switchCameraButton)
         verify(vm).switchCamera()
@@ -142,7 +141,7 @@ class InjectFragmentTest : BaseFragmentTest() {
 
     @Test
     fun togglesTorch() = runTest {
-        launch()
+        launchActivity()
         showBottomSheet()
         clickOn(R.id.toggleFlashButton)
         verify(vm).toggleTorch()

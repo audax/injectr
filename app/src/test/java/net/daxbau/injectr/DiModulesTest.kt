@@ -7,10 +7,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import org.koin.test.AutoCloseKoinTest
+import org.koin.test.KoinTest
 import org.koin.test.check.checkModules
 
-class DiModulesTest : AutoCloseKoinTest() {
+class DiModulesTest : KoinTest {
 
     @Rule
     @JvmField

@@ -54,25 +54,25 @@ android {
     testOptions {
         animationsDisabled = true
     }
-    sourceSets["androidTest"].java.srcDir("src/sharedTest/java")
-    sourceSets["test"].java.srcDir("src/sharedTest/java")
     namespace = "net.daxbau.injectr"
 }
 
 dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
-    implementation("androidx.appcompat:appcompat:1.2.0")
-    implementation("androidx.core:core-ktx:1.3.2")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("com.google.android.material:material:1.2.1")
-    implementation("androidx.constraintlayout:constraintlayout:2.0.2")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
 
     implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-    implementation("io.reactivex.rxjava2:rxjava:2.2.20")
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
+    androidTestImplementation(project(":app"))
+    androidTestImplementation(project(":app"))
 
-    val coroutinesVersion = "1.2.0"
+    val coroutinesVersion = "1.8.1"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion")
@@ -81,21 +81,21 @@ dependencies {
     androidTestImplementation("com.natpryce:hamkrest:1.8.0.1")
 
 
-    androidTestImplementation("androidx.test:rules:1.3.0")
+    androidTestImplementation("androidx.test:rules:1.6.1")
 
 
     testImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
-    androidTestImplementation("org.mockito:mockito-android:3.5.13")
+    androidTestImplementation("org.mockito:mockito-android:5.12.0")
 
-    val lifecycleVersion = "2.2.0"
+    val lifecycleVersion = "2.8.2"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-livedata:$lifecycleVersion")
-    testImplementation("androidx.arch.core:core-testing:2.1.0")
-    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation("androidx.arch.core:core-testing:2.2.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
     kapt("androidx.lifecycle:lifecycle-compiler:$lifecycleVersion")
 
-    val roomVersion = "2.2.4"
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
     // optional - Kotlin Extensions and Coroutines support for Room
@@ -105,11 +105,11 @@ dependencies {
     // Test helpers
     testImplementation("androidx.room:room-testing:$roomVersion")
 
-    val navVersion = "2.2.0"
+    val navVersion = "2.7.7"
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
-    val pagingVersion = "2.1.2"
+    val pagingVersion = "3.3.0"
     implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
     testImplementation("androidx.paging:paging-common-ktx:$pagingVersion")
     // optional - RxJava support
@@ -131,18 +131,18 @@ dependencies {
 
 
     testImplementation("junit:junit:4.13.1")
-    androidTestImplementation("androidx.test:runner:1.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
+    androidTestImplementation("androidx.test:runner:1.6.1")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
-    androidTestImplementation("com.adevinta.android:barista:4.2.0") {
+    androidTestImplementation("com.adevinta.android:barista:4.3.0") {
         exclude("com.android.support")
         exclude("org.jetbrains.kotlin")
         exclude("androidx.test.espresso")
     }
-    androidTestImplementation("androidx.test.ext:junit:1.1.2")
-    implementation("com.airbnb.android:epoxy:4.1.0")
-    implementation("com.airbnb.android:epoxy-paging:4.1.0")
-    kapt("com.airbnb.android:epoxy-processor:4.1.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    implementation("com.airbnb.android:epoxy:5.1.4")
+    implementation("com.airbnb.android:epoxy-paging:5.0.0")
+    kapt("com.airbnb.android:epoxy-processor:5.1.4")
 
     implementation("io.fotoapparat:fotoapparat:2.7.0")
     implementation("io.fotoapparat.fotoapparat:adapter-rxjava2:2.7.0")

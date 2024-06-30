@@ -91,8 +91,8 @@ class InjectFragment : Fragment(), JustLog {
                             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                         }
                     } catch (e: NoPhotoAvailableError) {
-                        mainThread.run {
-                            toast(R.string.injection_photo_error)
+                        this@InjectFragment.activity?.runOnUiThread {
+                            toast(getString(R.string.injection_photo_error))
                         }
                     }
                 }
