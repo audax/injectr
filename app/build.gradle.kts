@@ -3,17 +3,12 @@ import org.jetbrains.kotlin.config.KotlinCompilerVersion
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("kapt")
     id("androidx.navigation.safeargs.kotlin")
-
-}
-
-kapt {
-    correctErrorTypes = true
+    id("com.google.devtools.ksp")
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 35
 
     buildFeatures {
         viewBinding = true
@@ -33,9 +28,9 @@ android {
     defaultConfig {
         applicationId = "net.daxbau.injectr"
         minSdk = 26
-        targetSdk = 33
-        versionCode = 6
-        versionName = "6"
+        targetSdk = 35
+        versionCode = 8
+        versionName = "8"
         // testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "net.daxbau.injectr.CustomTestRunner"
 
@@ -61,10 +56,10 @@ dependencies {
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(kotlin("stdlib-jdk7", KotlinCompilerVersion.VERSION))
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
 
     implementation("io.reactivex.rxjava2:rxkotlin:2.4.0")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
@@ -88,16 +83,16 @@ dependencies {
     androidTestImplementation("com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0")
     androidTestImplementation("org.mockito:mockito-android:5.12.0")
 
-    val lifecycleVersion = "2.8.2"
+    val lifecycleVersion = "2.8.7"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion")
     implementation("androidx.lifecycle:lifecycle-livedata:$lifecycleVersion")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
     androidTestImplementation("androidx.arch.core:core-testing:2.2.0")
-    kapt("androidx.lifecycle:lifecycle-compiler:$lifecycleVersion")
+    implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycleVersion")
 
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")
-    kapt("androidx.room:room-compiler:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$roomVersion")
     // optional - RxJava support for Room
@@ -105,11 +100,11 @@ dependencies {
     // Test helpers
     testImplementation("androidx.room:room-testing:$roomVersion")
 
-    val navVersion = "2.7.7"
+    val navVersion = "2.8.8"
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
 
-    val pagingVersion = "3.3.0"
+    val pagingVersion = "3.3.6"
     implementation("androidx.paging:paging-runtime-ktx:$pagingVersion")
     testImplementation("androidx.paging:paging-common-ktx:$pagingVersion")
     // optional - RxJava support
@@ -130,8 +125,8 @@ dependencies {
     implementation("com.louiscad.splitties:splitties-alertdialog:3.0.0")
 
 
-    testImplementation("junit:junit:4.13.1")
-    androidTestImplementation("androidx.test:runner:1.6.1")
+    testImplementation("junit:junit:4.13.2")
+    androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
 
     androidTestImplementation("com.adevinta.android:barista:4.3.0") {
@@ -142,7 +137,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     implementation("com.airbnb.android:epoxy:5.1.4")
     implementation("com.airbnb.android:epoxy-paging:5.0.0")
-    kapt("com.airbnb.android:epoxy-processor:5.1.4")
+    ksp("com.airbnb.android:epoxy-processor:5.1.4")
 
     implementation("io.fotoapparat:fotoapparat:2.7.0")
     implementation("io.fotoapparat.fotoapparat:adapter-rxjava2:2.7.0")

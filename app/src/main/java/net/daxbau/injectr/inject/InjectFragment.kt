@@ -1,7 +1,6 @@
 package net.daxbau.injectr.inject
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
@@ -18,7 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
@@ -30,7 +29,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import splitties.alertdialog.alertDialog
 import splitties.alertdialog.cancelButton
 import splitties.alertdialog.okButton
-import splitties.mainthread.mainThread
 import splitties.toast.toast
 import splitties.views.onClick
 
@@ -46,6 +44,8 @@ class InjectFragment : Fragment(), JustLog {
     private var _bottomSheetBinding: BottomSheetInjectBinding? = null
     private val bottomSheetBinding: BottomSheetInjectBinding get() = _bottomSheetBinding!!
 
+    private val scope = MainScope()
+
     @VisibleForTesting
     internal lateinit var bottomSheetBehavior: BottomSheetBehavior<CoordinatorLayout>
 
@@ -53,7 +53,7 @@ class InjectFragment : Fragment(), JustLog {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         vm.setNavController(findNavController())
         _binding = FragmentInjectBinding.inflate(inflater, container, false)
         _bottomSheetBinding = binding.bottomSheetInclude
@@ -81,7 +81,7 @@ class InjectFragment : Fragment(), JustLog {
             photoManager.bindView(bottomSheetBinding.cameraView)
             bottomSheetBinding.takePhotoButton.setOnClickListener {
                 photoManager.takePhoto()
-                GlobalScope.launch {
+                scope.launch {
                     info("setting image view")
                     try {
                         val (bitmap, rotation) = photoManager.toBitmap()
@@ -111,7 +111,7 @@ class InjectFragment : Fragment(), JustLog {
             })
 
             saveInjectionButton.setOnClickListener {
-                GlobalScope.launch {
+                scope.launch {
                     vm.save()
                 }
             }
@@ -161,7 +161,7 @@ class InjectFragment : Fragment(), JustLog {
             if (it == true) {
                 alertDialog = context?.alertDialog(getString(R.string.injection_confirm)) {
                     okButton {
-                        GlobalScope.launch {
+                        scope.launch {
                             vm.confirmSave()
                         }
                     }

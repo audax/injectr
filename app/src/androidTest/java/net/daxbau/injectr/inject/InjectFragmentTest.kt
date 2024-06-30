@@ -122,9 +122,10 @@ class InjectFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun canCancel() {
+    fun canCancel() = runTest {
         launchActivity()
         vm.confirmationRequiredProxy.postValue(true)
+        delay(100)
         assertContains("Save without photo?")
         reset(vm)
         clickDialogNegativeButton()
