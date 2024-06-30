@@ -32,8 +32,8 @@ android {
     }
     defaultConfig {
         applicationId = "net.daxbau.injectr"
-        minSdkVersion(26)
-        targetSdkVersion(28)
+        minSdk = 26
+        targetSdk = 33
         versionCode = 6
         versionName = "6"
         // testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -118,9 +118,11 @@ dependencies {
     implementation(platform("io.insert-koin:koin-bom:3.5.6"))
     implementation("io.insert-koin:koin-core")
     implementation("io.insert-koin:koin-android")
+    testImplementation(platform("io.insert-koin:koin-bom:3.5.6"))
     testImplementation("org.koin:koin-test") {
         exclude("org.mockito")
     }
+    androidTestImplementation(platform("io.insert-koin:koin-bom:3.5.6"))
     androidTestImplementation("org.koin:koin-test") {
         exclude("org.mockito")
     }
