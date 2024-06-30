@@ -8,17 +8,18 @@ import android.view.MenuItem
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.get
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.daxbau.injectr.databinding.ActivityMainBinding
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -50,6 +51,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val toolbar = binding.drawerLayout.findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
         val toggle = ActionBarDrawerToggle(
@@ -68,6 +70,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
             binding.drawerLayout.closeDrawer(GravityCompat.START)

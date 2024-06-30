@@ -13,7 +13,7 @@ import net.daxbau.injectr.common.JustLog
 import net.daxbau.injectr.common.observe
 import net.daxbau.injectr.data.InjectionInfo
 import net.daxbau.injectr.databinding.InjectionListFragmentBinding
-import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class InjectionListFragment : Fragment() {

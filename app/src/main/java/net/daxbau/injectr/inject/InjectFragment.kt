@@ -1,5 +1,6 @@
 package net.daxbau.injectr.inject
 
+import android.app.AlertDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
@@ -24,14 +25,14 @@ import net.daxbau.injectr.common.JustLog
 import net.daxbau.injectr.common.observe
 import net.daxbau.injectr.databinding.BottomSheetInjectBinding
 import net.daxbau.injectr.databinding.FragmentInjectBinding
-import org.jetbrains.anko.noButton
-import org.jetbrains.anko.sdk27.coroutines.onClick
-import org.jetbrains.anko.support.v4.alert
-import org.jetbrains.anko.support.v4.runOnUiThread
-import org.jetbrains.anko.support.v4.toast
-import org.jetbrains.anko.yesButton
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import splitties.alertdialog.alertDialog
+import splitties.alertdialog.cancelButton
+import splitties.alertdialog.okButton
+import splitties.mainthread.mainThread
+import splitties.toast.toast
+import splitties.views.onClick
 
 
 class InjectFragment : Fragment(), JustLog {
@@ -74,7 +75,7 @@ class InjectFragment : Fragment(), JustLog {
         with(binding) {
             val bottomSheet = BottomSheetBehavior.from(bottomSheetBinding.root)
             bottomSheetBehavior = bottomSheet
-            bottomSheetBinding.bottomSheetInject.onClick {
+            bottomSheetBinding.bottomSheetInject.setOnClickListener {
                 bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
             }
             photoManager.bindView(bottomSheetBinding.cameraView)
@@ -90,7 +91,7 @@ class InjectFragment : Fragment(), JustLog {
                             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                         }
                     } catch (e: NoPhotoAvailableError) {
-                        runOnUiThread {
+                        mainThread.run {
                             toast(R.string.injection_photo_error)
                         }
                     }
@@ -155,17 +156,18 @@ class InjectFragment : Fragment(), JustLog {
 
         }
 
-        var alertDialog: DialogInterface? = null
+        var alertDialog: AlertDialog? = null
         observe(vm.confirmationRequired) {
             if (it == true) {
-                alertDialog = alert(R.string.injection_confirm) {
-                    yesButton {
+                alertDialog = context?.alertDialog(getString(R.string.injection_confirm)) {
+                    okButton {
                         GlobalScope.launch {
                             vm.confirmSave()
                         }
                     }
-                    noButton { }
-                }.show()
+                    cancelButton { }
+                }
+                alertDialog?.show()
             } else {
                 alertDialog?.cancel()
             }

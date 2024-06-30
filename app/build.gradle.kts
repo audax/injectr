@@ -46,7 +46,7 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
-    packagingOptions {
+    packaging {
         resources {
             pickFirsts += setOf("META-INF/atomicfu.kotlin_module")
         }
@@ -119,18 +119,22 @@ dependencies {
     implementation("io.insert-koin:koin-core")
     implementation("io.insert-koin:koin-android")
     testImplementation(platform("io.insert-koin:koin-bom:3.5.6"))
-    testImplementation("org.koin:koin-test") {
+    testImplementation("io.insert-koin:koin-test") {
         exclude("org.mockito")
     }
     androidTestImplementation(platform("io.insert-koin:koin-bom:3.5.6"))
-    androidTestImplementation("org.koin:koin-test") {
+    androidTestImplementation("io.insert-koin:koin-test") {
         exclude("org.mockito")
     }
+    implementation("com.louiscad.splitties:splitties-fun-pack-android-base-with-views-dsl:3.0.0")
+    implementation("com.louiscad.splitties:splitties-alertdialog:3.0.0")
+
 
     testImplementation("junit:junit:4.13.1")
     androidTestImplementation("androidx.test:runner:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.3.0")
-    androidTestImplementation("com.schibsted.spain:barista:2.8.0") {
+
+    androidTestImplementation("com.adevinta.android:barista:4.2.0") {
         exclude("com.android.support")
         exclude("org.jetbrains.kotlin")
         exclude("androidx.test.espresso")
@@ -148,4 +152,5 @@ repositories {
     mavenCentral()
     maven("https://repository.jetbrains.com/all")
     maven("https://jitpack.io")
+    google()
 }
