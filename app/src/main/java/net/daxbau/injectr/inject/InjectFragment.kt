@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,7 +80,10 @@ class InjectFragment : Fragment(), JustLog {
             bottomSheetBinding.bottomSheetInject.setOnClickListener {
                 bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
             }
-            photoManager.bindView(bottomSheetBinding.cameraView)
+            photoManager.bindView(
+                bottomSheetBinding.cameraView,
+                this@InjectFragment.viewLifecycleOwner
+            )
             bottomSheetBinding.takePhotoButton.setOnClickListener {
                 photoManager.takePhoto()
                 GlobalScope.launch {
@@ -94,6 +98,7 @@ class InjectFragment : Fragment(), JustLog {
                     } catch (e: NoPhotoAvailableError) {
                         this@InjectFragment.activity?.runOnUiThread {
                             toast(getString(R.string.injection_photo_error))
+                            error("Could not take photo", e)
                         }
                     }
                 }

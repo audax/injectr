@@ -1,6 +1,8 @@
 package net.daxbau.injectr.common
 
 import android.graphics.Bitmap
+import androidx.camera.view.PreviewView
+import androidx.lifecycle.LifecycleOwner
 import io.fotoapparat.view.CameraView
 import net.daxbau.injectr.inject.NoPhotoAvailableError
 import net.daxbau.injectr.inject.PhotoManager
@@ -13,7 +15,7 @@ open class StubPhotoManager : PhotoManager {
     var frontCameraSelected = true
     var torchEnabled = false
 
-    override fun bindView(view: CameraView) { }
+    override fun bindView(view: PreviewView, lifecyleOwner: LifecycleOwner) { }
 
     override fun start() { }
 

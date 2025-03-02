@@ -27,7 +27,7 @@ android {
     }
     defaultConfig {
         applicationId = "net.daxbau.injectr"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 35
         versionCode = 10
         versionName = "10"
@@ -66,6 +66,16 @@ dependencies {
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     androidTestImplementation(project(":app"))
     androidTestImplementation(project(":app"))
+
+    val cameraxVersion = "1.4.1"
+    implementation("androidx.camera:camera-core:${cameraxVersion}")
+    implementation("androidx.camera:camera-camera2:${cameraxVersion}")
+    implementation("androidx.camera:camera-lifecycle:${cameraxVersion}")
+    implementation("androidx.camera:camera-video:${cameraxVersion}")
+
+    implementation("androidx.camera:camera-view:${cameraxVersion}")
+    implementation("androidx.camera:camera-extensions:${cameraxVersion}")
+
 
     val coroutinesVersion = "1.8.1"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-rx2:$coroutinesVersion")

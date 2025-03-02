@@ -1,7 +1,21 @@
 package net.daxbau.injectr.inject
 
+import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.icu.text.SimpleDateFormat
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import android.widget.Toast
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.lifecycle.LifecycleOwner
 import io.fotoapparat.Fotoapparat
 import io.fotoapparat.configuration.CameraConfiguration
 import io.fotoapparat.configuration.UpdateConfiguration
@@ -18,9 +32,10 @@ import io.fotoapparat.view.CameraView
 import kotlinx.coroutines.rx2.await
 import java.io.File
 import java.util.*
+import java.util.concurrent.Executors
 
 interface PhotoManager {
-    fun bindView(view: CameraView)
+    fun bindView(view: PreviewView, lifecyleOwner: LifecycleOwner)
     fun start()
     fun stop()
     fun takePhoto()
@@ -31,53 +46,56 @@ interface PhotoManager {
 }
 
 class FotoapparatPhotoManager (private val context: Context): PhotoManager {
-    private var fotoapparat: Fotoapparat? = null
-    private var result: PhotoResult? = null
+    private var output: ImageCapture.OutputFileResults? = null
     private var frontLensSelected = false
     private var torchEnabled = false
+    private var imageCapture: ImageCapture? = null
+    private val cameraExecutor = Executors.newSingleThreadExecutor()
+
+
+    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+
 
     private var cameraConfiguration = CameraConfiguration(
         pictureResolution = { this.sortedBy { it.area }.find { it.width > 800 } },
         previewResolution = { this.sortedBy { it.area }.find { it.width > 800 } }
     )
 
-    override fun bindView(view: CameraView) {
-        result = null
-        fotoapparat = Fotoapparat(
-            context = context,
-            view = view,
-            scaleType = ScaleType.CenterInside,
-            lensPosition = back(),
-            cameraConfiguration = cameraConfiguration,
-            logger = loggers(
-                logcat()
-            )
-        )
+    override fun bindView(view: PreviewView, lifecyleOwner: LifecycleOwner) {
+        imageCapture = ImageCapture.Builder().build()
+        cameraProviderFuture.addListener({
+           val cameraProvider = cameraProviderFuture.get()
+
+           val preview = Preview.Builder().build().also {
+               it.surfaceProvider = view.surfaceProvider
+           }
+
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+
+            try {
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                   lifecyleOwner, cameraSelector, preview, imageCapture
+                )
+            } catch (e: Exception) {
+                Log.e("PhotoManager", "Use case binding failed", e)
+            }
+        }, context.mainExecutor)
+
     }
 
     override fun start() {
-        fotoapparat?.start()
     }
 
     override fun stop() {
-        fotoapparat?.stop()
     }
 
     override fun switchCamera() {
-        fotoapparat?.switchTo(
-            lensPosition = if (frontLensSelected) back() else front(),
-            cameraConfiguration = cameraConfiguration
-        )
         frontLensSelected = !frontLensSelected
     }
 
     override fun toggleTorch() {
         val flashMode = if (torchEnabled) off() else torch()
-        fotoapparat?.updateConfiguration(
-            UpdateConfiguration(
-                flashMode = flashMode
-            )
-        )
         torchEnabled = !torchEnabled
         cameraConfiguration = cameraConfiguration.copy(
             flashMode = flashMode
@@ -86,25 +104,69 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
 
 
     override fun takePhoto() {
-        result = fotoapparat?.takePicture()
+        // Get a stable reference of the modifiable image capture use case
+        val imageCapture = imageCapture ?: return
+
+        // Create time stamped name and MediaStore entry.
+        val name = "injection_" + SimpleDateFormat(FILENAME_FORMAT, Locale.US)
+            .format(System.currentTimeMillis())
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+            }
+        }
+
+        // Create output options object which contains file + metadata
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(context.contentResolver,
+                MediaStore.Images.Media.INTERNAL_CONTENT_URI,
+                contentValues)
+            .build()
+
+
+        // Set up image capture listener, which is triggered after photo has
+        // been taken
+        imageCapture.takePicture(
+            outputOptions,
+            context.mainExecutor,
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onError(exc: ImageCaptureException) {
+                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                }
+
+                override fun
+                        onImageSaved(output: ImageCapture.OutputFileResults){
+                    val msg = "Photo capture succeeded: ${output.savedUri}"
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    Log.d(TAG, msg)
+                    this@FotoapparatPhotoManager.output = output
+                }
+            }
+        )
     }
 
+
     override suspend fun toBitmap(): Pair<Bitmap, Float> {
-        return result?.let { photo ->
-            val bitmap = photo.toBitmap().toSingle().await()
-            return Pair(bitmap.bitmap, bitmap.rotationDegrees.toFloat())
+        return output?.let { photo ->
+            val bitmap = ImageDecoder.decodeBitmap(ImageDecoder.createSource(
+                context.contentResolver, photo.savedUri!!))
+
+            return Pair(bitmap, 0f)
         } ?: throw NoPhotoAvailableError()
     }
 
     override suspend fun save(): String {
-        return result?.let { photo ->
-            val randomId = UUID.randomUUID().toString()
-            val name = "injection_${randomId}_.jpg"
-            val file = File(context.filesDir, name)
-            photo.saveToFile(file).toSingle().await()
-            return name
-        } ?: throw NoPhotoAvailableError()
+        return output?.savedUri?.toString() ?: throw NoPhotoAvailableError()
     }
+
+    companion object {
+        private const val TAG = "PhotoManager"
+        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
+
+    }
+
 }
 
 class NoPhotoAvailableError: IllegalStateException()
