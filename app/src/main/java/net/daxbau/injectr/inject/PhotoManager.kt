@@ -1,11 +1,7 @@
 package net.daxbau.injectr.inject
 
-import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.icu.text.SimpleDateFormat
-import android.os.Build
-import android.provider.MediaStore
 import android.util.Log
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraSelector
@@ -98,17 +94,6 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
-        // Create time stamped name and MediaStore entry.
-        val name = "injection_" + SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-            .format(System.currentTimeMillis())
-        val contentValues = ContentValues().apply {
-            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-            if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
-            }
-        }
-
         // Set up image capture listener, which is triggered after photo has
         // been taken
         val deferred = CompletableDeferred<ImageProxy>()
@@ -148,8 +133,6 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
 
     companion object {
         private const val TAG = "PhotoManager"
-        private const val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-
     }
 
 }
