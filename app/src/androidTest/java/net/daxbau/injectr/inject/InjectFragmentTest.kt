@@ -21,7 +21,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.natpryce.hamkrest.assertion.assertThat
 import com.natpryce.hamkrest.present
 import com.nhaarman.mockitokotlin2.*
-import io.fotoapparat.result.PhotoResult
 import kotlinx.coroutines.delay
 import net.daxbau.injectr.BaseFragmentTest
 import net.daxbau.injectr.R
@@ -175,7 +174,6 @@ class InjectFragmentTest : BaseFragmentTest() {
         override var limb: Int = 0
         override var position: Int = 0
         override var comment: String = ""
-        override var photo: PhotoResult? = null
         val confirmationRequiredProxy = MutableLiveData<Boolean>()
         override val confirmationRequired: LiveData<Boolean> = confirmationRequiredProxy
 

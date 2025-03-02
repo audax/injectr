@@ -21,7 +21,6 @@ import net.daxbau.injectr.runTest
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.mock.declare
-import org.koin.test.mock.declareMock
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)

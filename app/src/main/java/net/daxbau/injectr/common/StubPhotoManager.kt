@@ -3,7 +3,6 @@ package net.daxbau.injectr.common
 import android.graphics.Bitmap
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
-import io.fotoapparat.view.CameraView
 import net.daxbau.injectr.inject.NoPhotoAvailableError
 import net.daxbau.injectr.inject.PhotoManager
 

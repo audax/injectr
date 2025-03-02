@@ -149,9 +149,6 @@ dependencies {
     implementation("com.airbnb.android:epoxy-paging:5.0.0")
     ksp("com.airbnb.android:epoxy-processor:5.1.4")
 
-    implementation("io.fotoapparat:fotoapparat:2.7.0")
-    implementation("io.fotoapparat.fotoapparat:adapter-rxjava2:2.7.0")
-
     implementation("io.getstream:photoview:1.0.3")
 }
 

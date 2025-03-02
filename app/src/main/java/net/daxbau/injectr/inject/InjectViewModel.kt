@@ -2,7 +2,6 @@ package net.daxbau.injectr.inject
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import io.fotoapparat.result.PhotoResult
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.NavigatingViewModel
 import net.daxbau.injectr.data.InjectionInfo
@@ -15,7 +14,6 @@ abstract class InjectViewModel : NavigatingViewModel() {
     abstract var position: Int
     abstract var date: Date?
     abstract var comment: String
-    abstract var photo: PhotoResult?
     abstract val confirmationRequired: LiveData<Boolean>
     abstract suspend fun save()
     abstract suspend fun confirmSave()
@@ -31,7 +29,6 @@ class InjectViewModelImpl(private val injectionInfoDao: InjectionInfoDao, privat
     override var position: Int = 0
     override var date: Date? = null
     override var comment: String = ""
-    override var photo: PhotoResult? = null
 
     private val _confirmationRequired = MutableLiveData<Boolean>().apply { value = false }
     override val confirmationRequired: LiveData<Boolean> = _confirmationRequired
