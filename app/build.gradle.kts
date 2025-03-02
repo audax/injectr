@@ -29,8 +29,8 @@ android {
         applicationId = "net.daxbau.injectr"
         minSdk = 26
         targetSdk = 35
-        versionCode = 8
-        versionName = "8"
+        versionCode = 10
+        versionName = "10"
         // testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunner = "net.daxbau.injectr.CustomTestRunner"
 
@@ -141,6 +141,8 @@ dependencies {
 
     implementation("io.fotoapparat:fotoapparat:2.7.0")
     implementation("io.fotoapparat.fotoapparat:adapter-rxjava2:2.7.0")
+
+    implementation("io.getstream:photoview:1.0.3")
 }
 
 repositories {

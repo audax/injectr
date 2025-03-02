@@ -33,7 +33,6 @@ import org.hamcrest.Matchers.allOf
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.test.mock.declare
-import org.koin.test.mock.declareMock
 import java.util.*
 
 

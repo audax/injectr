@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import net.daxbau.injectr.R
@@ -81,11 +82,11 @@ class InjectFragment : Fragment(), JustLog {
             photoManager.bindView(bottomSheetBinding.cameraView)
             bottomSheetBinding.takePhotoButton.setOnClickListener {
                 photoManager.takePhoto()
-                scope.launch {
+                GlobalScope.launch {
                     info("setting image view")
                     try {
                         val (bitmap, rotation) = photoManager.toBitmap()
-                        launch(Dispatchers.Main) {
+                        scope.launch {
                             injectionPhoto.setImageBitmap(bitmap)
                             injectionPhoto.rotation = -rotation
                             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
