@@ -7,6 +7,7 @@ import androidx.paging.toLiveData
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import net.daxbau.injectr.block
+import net.daxbau.injectr.runTest
 import net.daxbau.injectr.shouldEq
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +36,7 @@ class RoomTest : KoinTest {
     private val oldInjectionInfo =
         InjectionInfo(0, oldTime, 1, 1, 1, "comment", photoFileName = "foo.png")
     @Test
-    fun injectionInfoBasicOperations() {
+    fun injectionInfoBasicOperations() = runTest{
         injectionInfoDao.insertAll(injectionInfo)
         val data = injectionInfoDao.getAll().block()
         val element = injectionInfo.copy(id = 1)
@@ -45,7 +46,7 @@ class RoomTest : KoinTest {
     }
 
     @Test
-    fun injectionInfoCanBePaginated() {
+    fun injectionInfoCanBePaginated() = runTest {
         injectionInfoDao.insertAll(injectionInfo)
         val data: PagedList<InjectionInfo>? = injectionInfoDao.getPaginated().toLiveData(pageSize = 5).block()
         val element = injectionInfo.copy(id = 1)
@@ -53,7 +54,7 @@ class RoomTest : KoinTest {
     }
 
     @Test
-    fun findOldInjections() {
+    fun findOldInjections() = runTest {
         injectionInfoDao.insertAll(injectionInfo, oldInjectionInfo)
         injectionInfoDao.findOlderThan(
             Calendar.Builder().setDate(2001, 10, 10).build().time
@@ -61,7 +62,7 @@ class RoomTest : KoinTest {
     }
 
     @Test
-    fun updateInjections() {
+    fun updateInjections() = runTest {
         injectionInfoDao.insertAll(oldInjectionInfo)
         val inserted = injectionInfoDao.getAll().block()!!.first()
         val update = inserted.copy(photoFileName = null)

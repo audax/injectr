@@ -58,7 +58,7 @@ class InjectionListFragmentTest : BaseFragmentTest() {
     }
 
     @Test
-    fun showsData() {
+    fun showsData() = runTest {
         injectionInfoDao.insertAll(
             InjectionInfo(1, Date(), 6, 1, 2, "A"),
             InjectionInfo(2, Date(), 8, 1, 1, "B"),

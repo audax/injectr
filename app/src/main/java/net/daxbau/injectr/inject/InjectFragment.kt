@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.InputFilter
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import android.widget.SeekBar
 import androidx.annotation.VisibleForTesting
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
@@ -79,10 +81,13 @@ class InjectFragment : Fragment(), JustLog {
             bottomSheetBinding.bottomSheetInject.setOnClickListener {
                 bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
             }
-            photoManager.bindView(bottomSheetBinding.cameraView)
+            photoManager.bindView(
+                bottomSheetBinding.cameraView,
+                this@InjectFragment.viewLifecycleOwner
+            )
             bottomSheetBinding.takePhotoButton.setOnClickListener {
                 photoManager.takePhoto()
-                GlobalScope.launch {
+                lifecycleScope.launch {
                     info("setting image view")
                     try {
                         val (bitmap, rotation) = photoManager.toBitmap()
@@ -94,6 +99,7 @@ class InjectFragment : Fragment(), JustLog {
                     } catch (e: NoPhotoAvailableError) {
                         this@InjectFragment.activity?.runOnUiThread {
                             toast(getString(R.string.injection_photo_error))
+                            error("Could not take photo", e)
                         }
                     }
                 }
@@ -112,7 +118,7 @@ class InjectFragment : Fragment(), JustLog {
             })
 
             saveInjectionButton.setOnClickListener {
-                scope.launch {
+                lifecycleScope.launch {
                     vm.save()
                 }
             }
