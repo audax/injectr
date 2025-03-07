@@ -11,6 +11,7 @@ import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import net.daxbau.injectr.R
 import net.daxbau.injectr.common.KotlinEpoxyHolder
+import net.daxbau.injectr.data.InjectionInfo
 import java.text.DateFormat
 import java.util.*
 
@@ -23,6 +24,7 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
     @EpoxyAttribute var photo: Drawable? = null
     @EpoxyAttribute var position: String = ""
     @EpoxyAttribute lateinit var date: Date
+    @EpoxyAttribute var injectionInfo: InjectionInfo? = null
 
     @CallbackProp var clickListener: View.OnClickListener? = null
 

@@ -14,7 +14,9 @@
         <com.airbnb.epoxy.EpoxyRecyclerView
                 android:id="@+id/injectionListRecyclerView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:clipChildren="false"
+                />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/injectFab"

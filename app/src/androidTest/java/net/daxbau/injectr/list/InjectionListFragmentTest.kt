@@ -71,5 +71,6 @@ class InjectionListFragmentTest : BaseFragmentTest() {
         InjectionListViewModel() {
         override val injectionList = injectionInfoDao.getPaginated().toLiveData(pageSize = 5)
         override fun addInjection() { }
+        override fun deleteInjection(injectionInfo: InjectionInfo) { }
     }
 }

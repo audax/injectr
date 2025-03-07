@@ -1,5 +1,6 @@
 package net.daxbau.injectr.list
 
+import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,12 +12,16 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.airbnb.epoxy.EpoxyModel
+import com.airbnb.epoxy.EpoxyTouchHelper
+import com.airbnb.epoxy.EpoxyTouchHelper.SwipeCallbacks
 import com.airbnb.epoxy.paging.PagedListEpoxyController
+import net.daxbau.injectr.R
 import net.daxbau.injectr.common.JustLog
 import net.daxbau.injectr.common.observe
 import net.daxbau.injectr.data.InjectionInfo
 import net.daxbau.injectr.databinding.InjectionListFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import kotlin.math.max
 
 
 class InjectionListFragment : Fragment(), JustLog {
@@ -53,6 +58,33 @@ class InjectionListFragment : Fragment(), JustLog {
             ::zoomPhoto
         )
         binding.injectionListRecyclerView.setController(injectionInfoListController)
+        EpoxyTouchHelper
+            .initSwiping(binding.injectionListRecyclerView)
+            .right()
+            .withTarget(InjectionInfoItemModel::class.java)
+            .andCallbacks(object: SwipeCallbacks<InjectionInfoItemModel>() {
+                override fun onSwipeCompleted(
+                    model: InjectionInfoItemModel?,
+                    itemView: View?,
+                    position: Int,
+                    direction: Int
+                ) {
+                    val injectionInfo = model?.injectionInfo ?: return
+                    vm.deleteInjection(injectionInfo)
+                }
+
+                override fun onSwipeProgressChanged(
+                    model: InjectionInfoItemModel?,
+                    itemView: View?,
+                    swipeProgress: Float,
+                    canvas: Canvas?
+                ) {
+                    itemView?.findViewById<View>(R.id.swipe_to_delete)?.apply {
+                        translationX = max(-itemView.translationX, -measuredWidth.toFloat())
+                    }
+                }
+
+            })
         observe(vm.injectionList) {
             injectionInfoListController.submitList(it)
         }
@@ -69,7 +101,7 @@ class InjectionListFragment : Fragment(), JustLog {
         info("Zoom photo callback")
     }
 
-    fun backFromZoom() {
+    private fun backFromZoom() {
         binding.expandedImage.visibility = VISIBLE
         binding.expandedImage.setImageDrawable(null)
     }
@@ -101,6 +133,7 @@ class InjectionListFragment : Fragment(), JustLog {
                     position(it.position())
                     comment(it.comment)
                     photo(drawable)
+                    injectionInfo(item)
                     clickListener = handler
                 }
             }

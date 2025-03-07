@@ -33,6 +33,14 @@ class InjectionListViewModelTest {
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Test
+    fun deletesInjectionInfo() = runTest {
+        val item = InjectionInfo(1, Date(), 6, 1, 2, "A")
+        injectionInfoDao.insertAll(item)
+        vm.deleteInjection(item)
+        assert(injectionInfoDao.getAllEager().isEmpty())
+    }
+
+    @Test
     fun doesNotNavigateAfterDestroy() {
         vm.onDestroy()
         vm.addInjection()
