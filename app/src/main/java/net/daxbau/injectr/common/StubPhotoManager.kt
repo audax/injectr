@@ -1,6 +1,7 @@
 package net.daxbau.injectr.common
 
 import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import net.daxbau.injectr.inject.NoPhotoAvailableError
@@ -9,7 +10,6 @@ import net.daxbau.injectr.inject.PhotoManager
 open class StubPhotoManager : PhotoManager {
 
     var fileName = "stub_file"
-    var rotation = 1f
     var bitmap: Bitmap? = null
     var frontCameraSelected = true
     var torchEnabled = false
@@ -22,10 +22,8 @@ open class StubPhotoManager : PhotoManager {
 
     override fun takePhoto() { }
 
-    override suspend fun toBitmap(): Pair<Bitmap, Float> {
-        return bitmap?.let {
-            return Pair(it, rotation)
-        } ?: throw NoPhotoAvailableError()
+    override suspend fun asDrawable(): Drawable? {
+        return null
     }
 
     override suspend fun save(): String {

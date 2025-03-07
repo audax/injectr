@@ -1,5 +1,6 @@
 package net.daxbau.injectr.inject
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.text.Editable
@@ -29,6 +30,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import splitties.alertdialog.alertDialog
 import splitties.alertdialog.cancelButton
 import splitties.alertdialog.okButton
+import splitties.toast.UnreliableToastApi
 import splitties.toast.toast
 import splitties.views.onClick
 
@@ -70,6 +72,7 @@ class InjectFragment : Fragment(), JustLog {
         photoManager.start()
     }
 
+    @OptIn(UnreliableToastApi::class)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(binding) {
@@ -87,10 +90,9 @@ class InjectFragment : Fragment(), JustLog {
                 lifecycleScope.launch {
                     info("setting image view")
                     try {
-                        val (bitmap, rotation) = photoManager.toBitmap()
+                        val drawable = photoManager.asDrawable()
                         scope.launch {
-                            injectionPhoto.setImageBitmap(bitmap)
-                            injectionPhoto.rotation = -rotation
+                            injectionPhoto.setImageDrawable(drawable)
                             bottomSheet.state = BottomSheetBehavior.STATE_COLLAPSED
                         }
                     } catch (e: NoPhotoAvailableError) {
@@ -178,6 +180,7 @@ class InjectFragment : Fragment(), JustLog {
         }
     }
 
+    @SuppressLint("DiscouragedPrivateApi")
     private fun numberPickerFormatWorkaround() {
         // see https://issuetracker.google.com/issues/36952035
         val f = NumberPicker::class.java.getDeclaredField("mInputText")
@@ -191,7 +194,4 @@ class InjectFragment : Fragment(), JustLog {
         vm.onDestroy()
     }
 
-    companion object {
-        const val TAG = "Inject"
-    }
 }

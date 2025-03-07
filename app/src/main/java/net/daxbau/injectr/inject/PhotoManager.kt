@@ -1,19 +1,23 @@
 package net.daxbau.injectr.inject
 
 import android.content.Context
-import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.util.Log
+import android.util.Size
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCapture.OnImageCapturedCallback
+import androidx.camera.core.ImageCapture.OnImageSavedCallback
+import androidx.camera.core.ImageCapture.OutputFileOptions
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.resolutionselector.ResolutionSelector
+import androidx.camera.core.resolutionselector.ResolutionStrategy
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import java.io.File
 import java.util.*
 
@@ -24,12 +28,12 @@ interface PhotoManager {
     fun takePhoto()
     fun switchCamera()
     fun toggleTorch()
-    suspend fun toBitmap(): Pair<Bitmap, Float>
+    suspend fun asDrawable(): Drawable?
     suspend fun save(): String
 }
 
 class FotoapparatPhotoManager (private val context: Context): PhotoManager {
-    private var output: CompletableDeferred<ImageProxy>? = null
+    private var output: CompletableDeferred<String>? = null
     private var cameraControl: CameraControl? = null
     private var frontLensSelected = false
     private var torchEnabled = false
@@ -45,7 +49,12 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
     override fun bindView(view: PreviewView, lifecycleOwner: LifecycleOwner) {
         this.view = view
         this.lifecycleOwner = lifecycleOwner
-        imageCapture = ImageCapture.Builder().build()
+        val maxSize = Size(1200, 1200)
+        imageCapture = ImageCapture.Builder()
+            .setResolutionSelector(ResolutionSelector.Builder().setResolutionStrategy(
+                ResolutionStrategy(maxSize, ResolutionStrategy.FALLBACK_RULE_CLOSEST_HIGHER_THEN_LOWER)
+                ).build())
+            .build()
         cameraProviderFuture.addListener({
            val cameraProvider = cameraProviderFuture.get()
 
@@ -88,26 +97,49 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
         cameraControl?.enableTorch(torchEnabled)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun deleteUnsavedPhoto() {
+        val fileName = try {
+            output?.getCompleted()
+        } catch (e: IllegalStateException) {
+            // ignore
+            return
+        } ?: return
+        val file = File(context.filesDir, fileName)
+        file.delete()
+    }
+
 
     // make suspend and directly return bitmap
     override fun takePhoto() {
         // Get a stable reference of the modifiable image capture use case
         val imageCapture = imageCapture ?: return
 
+        deleteUnsavedPhoto()
+
         // Set up image capture listener, which is triggered after photo has
         // been taken
-        val deferred = CompletableDeferred<ImageProxy>()
+        val randomId = UUID.randomUUID().toString()
+        val name = "injection_${randomId}_.jpg"
+        val outputFile = File(context.filesDir, name)
+        val deferred = CompletableDeferred<String>()
+        val outputFileOptions = OutputFileOptions.Builder(outputFile).build()
         output = deferred
         imageCapture.takePicture(
+            outputFileOptions,
             context.mainExecutor,
-            object : OnImageCapturedCallback() {
+            object : OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
                 }
 
-                override fun onCaptureSuccess(image: ImageProxy) {
-                    super.onCaptureSuccess(image)
-                    deferred.complete(image)
+                override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+                    val uri = outputFileResults.savedUri
+                    if (uri == null) {
+                        Log.e(TAG, "Photo save did not produce uri")
+                    } else {
+                        deferred.complete(name)
+                    }
                 }
 
             }
@@ -115,20 +147,16 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
     }
 
 
-    override suspend fun toBitmap(): Pair<Bitmap, Float> {
-        val photoDeferred = output ?: throw NoPhotoAvailableError()
+    override suspend fun asDrawable(): Drawable? {
+        val photoDeferred = output ?: return null
         val photo = photoDeferred.await()
-        return Pair(photo.toBitmap(), photo.imageInfo.rotationDegrees.toFloat())
+        return Drawable.createFromPath(File(context.filesDir, photo).path)
     }
 
     override suspend fun save(): String {
-        val photoDeferred = output ?: throw NoPhotoAvailableError()
-        val photo = photoDeferred.await()
-        val randomId = UUID.randomUUID().toString()
-        val name = "injection_${randomId}_.jpg"
-        val file = File(context.filesDir, name)
-        photo.toBitmap().compress(Bitmap.CompressFormat.PNG, 95, file.outputStream())
-        return name
+        val fileName = output?.await() ?: throw NoPhotoAvailableError()
+        output = null
+        return fileName
     }
 
     companion object {
