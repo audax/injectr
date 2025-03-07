@@ -2,7 +2,6 @@ package net.daxbau.injectr.inject
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import android.util.Log
 import android.util.Size
 import androidx.camera.core.CameraControl
 import androidx.camera.core.CameraSelector
@@ -18,6 +17,7 @@ import androidx.camera.view.PreviewView
 import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import net.daxbau.injectr.common.JustLog
 import java.io.File
 import java.util.*
 
@@ -32,7 +32,7 @@ interface PhotoManager {
     suspend fun save(): String
 }
 
-class FotoapparatPhotoManager (private val context: Context): PhotoManager {
+class FotoapparatPhotoManager (private val context: Context): PhotoManager, JustLog {
     private var output: CompletableDeferred<String>? = null
     private var cameraControl: CameraControl? = null
     private var frontLensSelected = false
@@ -43,7 +43,7 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
     private var lifecycleOwner: LifecycleOwner? = null
 
 
-    private val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+    private val cameraProviderFuture by lazy { ProcessCameraProvider.getInstance(context) }
 
 
     override fun bindView(view: PreviewView, lifecycleOwner: LifecycleOwner) {
@@ -73,7 +73,7 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
                 cameraControl = camera.cameraControl
 
             } catch (e: Exception) {
-                Log.e("PhotoManager", "Use case binding failed", e)
+                error("Use case binding failed", e)
             }
         }, context.mainExecutor)
 
@@ -130,13 +130,13 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
             context.mainExecutor,
             object : OnImageSavedCallback {
                 override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed: ${exc.message}", exc)
+                    error("Photo capture failed: ${exc.message}", exc)
                 }
 
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                     val uri = outputFileResults.savedUri
                     if (uri == null) {
-                        Log.e(TAG, "Photo save did not produce uri")
+                        error("Photo save did not produce uri")
                     } else {
                         deferred.complete(name)
                     }
@@ -157,10 +157,6 @@ class FotoapparatPhotoManager (private val context: Context): PhotoManager {
         val fileName = output?.await() ?: throw NoPhotoAvailableError()
         output = null
         return fileName
-    }
-
-    companion object {
-        private const val TAG = "PhotoManager"
     }
 
 }

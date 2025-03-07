@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import org.jetbrains.kotlin.config.KotlinCompilerVersion
 
 plugins {
@@ -48,6 +50,8 @@ android {
     }
     testOptions {
         animationsDisabled = true
+        unitTests.isReturnDefaultValues = true
+
     }
     namespace = "net.daxbau.injectr"
 }

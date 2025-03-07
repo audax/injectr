@@ -7,6 +7,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_purge">Purge old photos</string>
 
+    <string name="record_injection">Record a new injection</string>
     <string name="save_injection_button">Save</string>
     <string name="inject_photo">Take photo</string>
     <string name="injection_photo_description">Injection Photograph</string>
@@ -19,4 +20,5 @@
     <string name="inject_switch_camera">Switch camera</string>
     <string name="inject_toggle_flash">Toggle flash</string>
     <string name="camera">Camera</string>
+    <string name="expand_image">Expand image\n</string>
 </resources>

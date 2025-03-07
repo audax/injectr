@@ -1,8 +1,11 @@
 package net.daxbau.injectr.list
 
+import android.annotation.SuppressLint
 import android.graphics.drawable.Drawable
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
+import com.airbnb.epoxy.CallbackProp
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
@@ -11,6 +14,7 @@ import net.daxbau.injectr.common.KotlinEpoxyHolder
 import java.text.DateFormat
 import java.util.*
 
+@SuppressLint("NonConstantResourceId")
 @EpoxyModelClass(layout = R.layout.injection_info_item)
 abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemModel.Holder>() {
 
@@ -20,6 +24,9 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
     @EpoxyAttribute var position: String = ""
     @EpoxyAttribute lateinit var date: Date
 
+    @CallbackProp var clickListener: View.OnClickListener? = null
+
+
     override fun bind(holder: Holder) {
         super.bind(holder)
         holder.dateView.text = DateFormat.getInstance().format(date)
@@ -27,6 +34,7 @@ abstract class InjectionInfoItemModel : EpoxyModelWithHolder<InjectionInfoItemMo
         holder.commentView.text = comment
         holder.positionView.text = position
         holder.imageView.setImageDrawable(photo)
+        holder.imageView.setOnClickListener(clickListener)
     }
 
     class Holder : KotlinEpoxyHolder() {

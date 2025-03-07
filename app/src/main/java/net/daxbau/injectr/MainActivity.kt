@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import androidx.activity.addCallback
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
@@ -12,11 +13,11 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
-import androidx.core.view.get
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import com.google.android.material.navigation.NavigationView
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.daxbau.injectr.databinding.ActivityMainBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -49,6 +50,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        onBackPressedDispatcher.addCallback {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            }
+        }
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         val toolbar = binding.drawerLayout.findViewById<Toolbar>(R.id.toolbar)
@@ -70,15 +76,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            binding.drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            super.onBackPressed()
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
@@ -91,7 +88,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // as you specify a parent activity in AndroidManifest.xml.
         return when (item.itemId) {
             R.id.action_purge -> {
-                GlobalScope.launch { vm.purgeOldPhotos() }
+                lifecycleScope.launch(Dispatchers.IO) { vm.purgeOldPhotos() }
                 true
             }
             else -> super.onOptionsItemSelected(item)
